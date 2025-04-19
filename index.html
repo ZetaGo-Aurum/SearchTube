@@ -1,0 +1,1179 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchTube - Streaming YouTube Modern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: 59, 130, 246; /* blue-500 */
+            --secondary-color: 29, 78, 216; /* blue-700 */
+            --dark-color: 17, 24, 39; /* gray-900 */
+            --text-color: 229, 231, 235; /* gray-200 */
+            --gradient-start: 59, 130, 246; /* blue-500 */
+            --gradient-end: 29, 78, 216; /* blue-700 */
+        }
+        /* ... (semua style CSS lainnya tetap sama seperti sebelumnya) ... */
+        body{font-family:'Inter',sans-serif;background-color:rgb(var(--dark-color));color:rgb(var(--text-color));overscroll-behavior:none}.glassmorphism{background:rgba(var(--primary-color),0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 32px 0 rgba(31,38,135,0.37)}.glassmorphism-darker{background:rgba(var(--dark-color),0.4);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 32px 0 rgba(0,0,0,0.5)}.gradient-text{background:linear-gradient(to right,rgb(var(--gradient-start)),rgb(var(--gradient-end)));-webkit-background-clip:text;background-clip:text;color:transparent}.bg-gradient-dynamic{background:linear-gradient(to right,rgb(var(--gradient-start)),rgb(var(--gradient-end)))}.border-gradient-dynamic{border-color:rgb(var(--gradient-start))}.text-primary-dynamic{color:rgb(var(--primary-color))}.bg-primary-dynamic{background-color:rgb(var(--primary-color))}.hover\:bg-primary-dynamic\/10:hover{background-color:rgba(var(--primary-color),0.1)}.hover\:bg-primary-dynamic\/20:hover{background-color:rgba(var(--primary-color),0.2)}.hover\:bg-primary-dynamic\/30:hover{background-color:rgba(var(--primary-color),0.3)}.hover\:bg-primary-dynamic\/40:hover{background-color:rgba(var(--primary-color),0.4)}.focus\:ring-primary-dynamic:focus{--tw-ring-color:rgb(var(--primary-color))}.bg-primary-dynamic\/10{background-color:rgba(var(--primary-color),0.1)}.bg-primary-dynamic\/20{background-color:rgba(var(--primary-color),0.2)}.bg-primary-dynamic\/30{background-color:rgba(var(--primary-color),0.3)}.bg-secondary-dynamic{background-color:rgb(var(--secondary-color))}.bg-dark-dynamic{background-color:rgb(var(--dark-color))}.text-dark-dynamic{color:rgb(var(--dark-color))}.border-primary-dynamic{border-color:rgb(var(--primary-color))}.text-blue-400{color:#60a5fa}.hover\:text-blue-400:hover{color:#60a5fa}::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:rgba(var(--dark-color),0.5);border-radius:10px}::-webkit-scrollbar-thumb{background:rgba(var(--primary-color),0.6);border-radius:10px;border:1px solid rgba(var(--dark-color),0.5)}::-webkit-scrollbar-thumb:hover{background:rgba(var(--primary-color),0.8)}@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes slideOut{from{transform:translateX(0)}to{transform:translateX(-100%)}}.sidebar-slide-in{animation:slideIn .3s forwards}.sidebar-slide-out{animation:slideOut .3s forwards}.loader{border:4px solid rgba(var(--text-color),0.3);border-left-color:rgb(var(--primary-color));border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#main-content{padding-top:64px}@media (min-width:768px){#main-content{padding-left:256px}}.iframe-container{position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden}.iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}.sidebar-link-active{background-color:rgba(var(--primary-color),0.3);color:rgb(var(--primary-color));font-weight:600}body,.glassmorphism,.glassmorphism-darker,.sidebar,.navbar,.card,button,input,select,textarea,#custom-modal,#toast-notification{transition:background-color .3s ease,color .3s ease,border-color .3s ease,opacity .3s ease,transform .3s ease}.navbar{width:100%;position:fixed;top:0;left:0;right:0;z-index:50}
+        /* --- Sidebar Position Fix --- */
+        #sidebar { /* Mobile and default */
+            top: 0; /* Starts at the very top */
+            padding-top: 4rem; /* 64px navbar height */
+            height: 100vh;
+            padding-right: 1rem; /* Add some padding to the right */
+        }
+        @media (min-width: 768px) { /* Desktop */
+            #sidebar {
+                 top: 0; /* Reset top for desktop */
+                 padding-top: 4rem; /* Keep padding for consistency */
+                 height: 100vh; /* Ensure full height */
+            }
+            /* Ensure desktop sidebar content area is scrollable */
+             #sidebar > div {
+                 height: 100%;
+                 overflow-y: auto;
+             }
+        }
+        #desktop-sidebar { /* This ID might be redundant now, but keep its padding */
+            padding-top: 64px;
+        }
+        #mobile-search-container { /* Sticky within the padded sidebar */
+            position: sticky;
+            top: 0; /* Sticks to the top of the scrollable area */
+            z-index: 10;
+            background: inherit; /* Inherit glass effect */
+            padding: 8px; /* Add some padding */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #sidebar-nav-links {
+            /* No extra padding needed now as parent #sidebar has pt-16 */
+            padding: 0 1rem; /* Add some horizontal padding */
+        }
+         /* --- End Sidebar Position Fix --- */
+
+        #custom-modal-backdrop{position:fixed;inset:0;background-color:rgba(0,0,0,0.7);z-index:90}#custom-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;max-width:90%;width:500px;max-height:80vh;overflow-y:auto}#toast-notification{position:fixed;bottom:1.25rem;right:1.25rem;z-index:110;transform:translateY(200%);opacity:0;transition:transform .4s ease-out,opacity .4s ease-out}#toast-notification.show{transform:translateY(0);opacity:1}.replies-container{border-left:2px solid rgba(var(--primary-color),0.3);padding-left:.75rem;margin-left:.75rem;margin-top:.5rem}.comment-card{border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:.75rem;margin-bottom:.75rem}.comment-card:last-child{border-bottom:none;margin-bottom:0}.playlist-item-card{display:block;text-decoration:none}.playlist-item-card:hover .playlist-thumbnail-overlay{opacity:1}.playlist-thumbnail-overlay{position:absolute;inset:0;background-color:rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .3s ease}.settings-section{margin-bottom:2rem}.settings-grid{display:grid;gap:1.5rem}@media (min-width:768px){.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}img[src='placeholder.jpg'],img[src='placeholder-avatar.png']{background-color:rgba(var(--primary-color),0.1);object-fit:cover}img:error{content:'';background-color:rgba(var(--primary-color),0.05)}select.custom-select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23e5e7eb%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.23%207.21a.75.75%200%20011.06.02L10%2010.94l3.71-3.71a.75.75%200%20111.06%201.06l-4.25%204.25a.75.75%200%2001-1.06%200L5.21%208.29a.75.75%200%2001.02-1.06z%22%20clip-rule%3D%22evenodd%22%20%2F%3E%3C%2Fsvg%3E');background-repeat:no-repeat;background-position:right .75rem center;background-size:1em;padding-right:2.5rem}
+
+        .bg-gradient-dynamic text-white px-3 py-2 rounded-r-md hover:opacity-90 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-gray-900 focus:ring-primary-dynamic {
+            background: linear-gradient(to right, rgb(var(--gradient-start)), rgb(var(--gradient-end)));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: opacity 0.3s ease;
+            display: inline-flex;
+        }
+        .bg-gradient-dynamic text-white px-3 py-2 rounded-r-md:hover {
+            opacity: 0.9;
+        }
+        .bg-gradient-dynamic text-white px-3 py-2 rounded-r-md:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.5);
+        }
+
+        /* Tambahan opsional agar tombol search mobile full width di bawah input */
+@media (max-width: 767px) {
+    #search-form-mobile {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    #search-form-mobile input {
+        border-radius: 0.375rem !important;
+        border-bottom-left-radius: 0.375rem !important;
+        border-bottom-right-radius: 0.375rem !important;
+    }
+    .mobile-search-btn-wrapper button {
+        margin-top: 0 !important;
+        border-radius: 0.375rem !important;
+    }
+}
+
+        @media (max-width: 767px) {
+    .mobile-search-btn-wrapper button {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.5rem !important;
+    }
+    .mobile-search-label {
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+/* Tambahkan di dalam <style> di <head> atau file CSS Anda */
+
+/* Navbar tidak tertutup custom scrollbar, tidak ada celah kanan, scrollbar tetap di atas konten */
+.navbar {
+    width: 100vw;
+    left: 0;
+    right: 0;
+    position: fixed;
+    top: 0;
+    z-index: 60;
+    box-sizing: border-box;
+    max-width: 100vw;
+    margin: 0 !important;
+    padding-right: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Scrollbar custom tetap di atas konten, tapi tidak di atas navbar */
+body, html {
+    overflow-y: overlay;
+}
+
+/* Custom scrollbar hanya sampai bawah navbar, bukan seluruh layar */
+body, html {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    /* overflow-y: overlay; Sudah ada, biarkan */
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#main-content {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow-y: auto;
+    /* Scrollbar hanya di main-content, bukan di body */
+}
+
+/* Hilangkan overflow-y di body agar tidak double scrollbar */
+body {
+    overflow-y: hidden;
+}
+
+/* Scrollbar custom tetap aktif di main-content */
+#main-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+#main-content::-webkit-scrollbar-track {
+    background: rgba(var(--dark-color),0.5);
+    border-radius: 10px;
+}
+#main-content::-webkit-scrollbar-thumb {
+    background: rgba(var(--primary-color),0.6);
+    border-radius: 10px;
+    border: 1px solid rgba(var(--dark-color),0.5);
+}
+#main-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--primary-color),0.8);
+}
+
+/* --- Responsive & Clean Settings API Key Help --- */
+#api-key-help-link {
+    margin-top: 0.5rem;
+    font-size: 0.85em;
+    color: #9ca3af; /* Tailwind gray-400 */
+    line-height: 1.5;
+}
+#api-key-help-link a {
+    color: rgb(var(--primary-color));
+    text-decoration: underline;
+    transition: color 0.2s;
+    word-break: break-all;
+}
+#api-key-help-link a:hover {
+    color: #60a5fa; /* Tailwind blue-400 */
+}
+@media (max-width: 767px) {
+    #api-key-help-link {
+        font-size: 0.95em;
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* --- Responsive Settings Section --- */
+.settings-section {
+    margin-bottom: 2rem;
+    padding: 1.25rem 1rem;
+}
+@media (max-width: 767px) {
+    .settings-section {
+        padding: 1rem 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* --- Responsive Settings Grid --- */
+.settings-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+@media (min-width: 768px) {
+    .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 767px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* --- Responsive API Key Input Row --- */
+#custom-api-key {
+    min-width: 0;
+    width: 100%;
+    font-size: 1em;
+}
+@media (max-width: 767px) {
+    #custom-api-key {
+        font-size: 1em;
+        padding: 0.5rem 0.75rem;
+    }
+    #save-api-key, #reset-api-key {
+        padding: 0.5rem 0.75rem;
+        font-size: 1em;
+    }
+    .settings-section .flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* --- Responsive Toast Notification --- */
+#toast-notification {
+    max-width: 90vw;
+    word-break: break-word;
+    left: 50%;
+    transform: translateX(-50%) translateY(200%);
+    right: auto;
+}
+#toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+@media (min-width: 640px) {
+    #toast-notification {
+        left: auto;
+        right: 1.25rem;
+        transform: translateY(200%);
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+    }
+}
+
+/* --- Responsive Modal --- */
+#custom-modal {
+    width: 95vw;
+    max-width: 500px;
+}
+@media (min-width: 640px) {
+    #custom-modal {
+        width: 500px;
+    }
+}
+
+/* --- Responsive Main Content Padding --- */
+#main-content {
+    padding-top: 64px;
+    padding-left: 0;
+    padding-right: 0;
+}
+@media (min-width: 768px) {
+    #main-content {
+        padding-left: 256px;
+        padding-right: 0;
+    }
+}
+@media (max-width: 767px) {
+    #main-content {
+        padding: 1rem 0.5rem 0.5rem 0.5rem;
+    }
+}
+
+
+/* --- Perbaikan Responsive Kolom & Tombol API Key di Settings --- */
+
+/* Desktop: kolom API dan tombol ramping */
+@media (min-width: 768px) {
+    #custom-api-key {
+        max-width: 220px !important;
+        font-size: 0.97em;
+        padding: 0.5rem 0.75rem;
+        height: 2.1rem;
+    }
+    #save-api-key, #reset-api-key {
+        min-width: 72px !important;
+        max-width: 90px !important;
+        font-size: 0.97em;
+        padding: 0.5rem 0.75rem;
+        height: 2.1rem;
+    }
+    .settings-section .flex.items-stretch.gap-2 {
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+/* Mobile: kolom dan tombol tetap proporsional */
+@media (max-width: 767px) {
+    #custom-api-key {
+        font-size: 1em;
+        padding: 0.5rem 0.75rem;
+        max-width: 100%;
+        height: 2.1rem;
+    }
+    #save-api-key, #reset-api-key {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        font-size: 1em;
+        padding: 0.5rem 0.75rem;
+        height: 2.1rem;
+        margin-bottom: 0.25rem;
+    }
+    .settings-section .flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Umum: tombol selalu flex, rata tengah, ramping */
+#save-api-key, #reset-api-key {
+    font-size: 1em;
+    padding: 0.5rem 0.75rem;
+    min-width: 64px;
+    max-width: 120px;
+    height: 2.1rem;
+    line-height: 1.2;
+    border-radius: 0.375rem;
+    box-sizing: border-box;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+#save-api-key .api-key-btn-label,
+#reset-api-key .api-key-btn-label {
+    font-size: 1em;
+    line-height: 1.2;
+    display: inline;
+}
+#custom-api-key {
+    font-size: 1em;
+    padding: 0.5rem 0.75rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 2.1rem;
+}
+
+/* --- Judul Halaman Tidak Tertimpa Navbar di Mobile --- */
+@media (max-width: 767px) {
+    #view-container > h1,
+    #view-container > .flex > h1,
+    #view-container > .flex.items-center > h1,
+    #view-container > .flex.justify-between > h1,
+    #view-container > .flex.justify-between.items-center > h1,
+    #view-container > .flex.gap-4 > h1,
+    #view-container > .flex.items-center.gap-4 > h1,
+    #view-container > .mb-6 > h1,
+    #view-container > .flex > .gradient-text,
+    #view-container > .flex > .text-2xl,
+    #view-container > .flex > .text-xl,
+    #view-container > .flex > .text-3xl,
+    #view-container > .flex > .text-lg,
+    #view-container > .flex > .font-bold,
+    #view-container > .flex > .gradient-text,
+    #view-container > .flex > .font-bold.gradient-text,
+    #view-container > .flex > .text-2xl.font-bold.gradient-text,
+    #view-container > .flex > .text-3xl.font-bold.gradient-text,
+    #view-container > .flex > .text-xl.font-bold.gradient-text,
+    #view-container > .flex > .text-lg.font-bold.gradient-text {
+        margin-top: 4.5rem !important;
+    }
+    /* Playlist: tombol "Buat Playlist" tidak tertimpa navbar */
+    #view-container > .flex.justify-between.items-center > button,
+    #view-container > .flex.items-center.mb-6 > button,
+    #view-container > .flex.mb-6 > button {
+        margin-top: 4.5rem !important;
+    }
+}
+
+/* --- Perbaiki tombol "Buat Playlist" agar tidak tertimpa navbar di mobile --- */
+@media (max-width: 767px) {
+    #view-container > .flex.justify-between.items-center > button,
+    #view-container > .flex.items-center.mb-6 > button,
+    #view-container > .flex.mb-6 > button {
+        z-index: 1;
+        position: relative;
+    }
+}
+
+/* --- Responsive: Pastikan judul channel, playlist, about, dll juga tidak tertimpa --- */
+@media (max-width: 767px) {
+    .channel-header h1,
+    .playlist-item-card h3,
+    .playlist-details-header h1,
+    .about-header h1,
+    .settings-section h1,
+    .settings-section > h1,
+    .settings-section .gradient-text,
+    .settings-section .font-bold.gradient-text {
+        margin-top: 4.5rem !important;
+    }
+}
+
+/* --- Responsive: Pastikan judul halaman tentang tidak tertimpa navbar di mobile --- */
+@media (max-width: 767px) {
+    .about-header h1,
+    .max-w-3xl.mx-auto.glassmorphism > h1,
+    .max-w-3xl.mx-auto.glassmorphism .gradient-text,
+    .max-w-3xl.mx-auto.glassmorphism .text-3xl,
+    .max-w-3xl.mx-auto.glassmorphism .text-4xl {
+        margin-top: 4.5rem !important;
+        display: block;
+    }
+}
+
+/* --- Perbaiki tab navbar Video/Playlist di halaman channel agar tidak ikut scroll (bukan sticky/fixed) --- */
+@media (max-width: 1024px) {
+    .channel-header + .border-b.sticky,
+    .channel-header + .border-b.sticky.top-16,
+    .channel-header + .border-b.sticky.top-16.bg-dark-dynamic\/80,
+    .channel-header + .border-b.sticky.backdrop-blur-sm {
+        position: static !important;
+        top: auto !important;
+        background: none !important;
+        z-index: auto !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+}
+@media (min-width: 1025px) {
+    .channel-header + .border-b.sticky,
+    .channel-header + .border-b.sticky.top-16,
+    .channel-header + .border-b.sticky.top-16.bg-dark-dynamic\/80,
+    .channel-header + .border-b.sticky.backdrop-blur-sm {
+        position: static !important;
+        top: auto !important;
+        background: none !important;
+        z-index: auto !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+}
+
+/* --- Pastikan bagian atas halaman Watch & Channel tidak terpotong navbar di mobile/tablet --- */
+@media (max-width: 1024px) {
+    /* Watch page: judul dan video player */
+    #view-container > .flex.flex-col.lg\:flex-row,
+    #view-container > .flex.flex-col.lg\:flex-row > div:first-child,
+    #view-container > .iframe-container,
+    #view-container > h1,
+    #view-container > .text-xl,
+    #view-container > .text-2xl,
+    #view-container > .font-bold,
+    #view-container > .gradient-text {
+        margin-top: 3 !important;
+    }
+
+    /* Channel page: header dan tab */
+    .channel-header,
+    .channel-header + .border-b,
+    .channel-header h1 {
+        margin-top: 3 !important
+    }
+}
+    </style>
+</head>
+<body class="bg-dark-dynamic text-text-color">
+
+    <div id="app" class="min-h-screen">
+
+        <!-- Navbar -->
+        <nav class="navbar h-16 glassmorphism-darker flex items-center justify-between px-4 md:px-6">
+             <!-- Left: Menu Toggle & Logo -->
+             <div class="flex items-center space-x-4">
+                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-primary-dynamic/30 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-dynamic">
+                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                 </button>
+                 <a href="#home" id="logo-link" class="flex items-center space-x-2">
+                      <svg class="h-8 w-8 text-primary-dynamic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" /></svg>
+                     <span class="text-xl font-bold gradient-text hidden sm:inline">SearchTube</span>
+                 </a>
+             </div>
+             <!-- Center: Search -->
+             <div class="hidden md:flex flex-grow max-w-xl mx-4">
+                 <form id="search-form-desktop" class="w-full flex">
+                     <input type="text" id="search-input-desktop" placeholder="Cari video..." class="flex-grow bg-black/30 border border-white/20 rounded-l-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-primary-dynamic text-gray-200 placeholder-gray-400">
+                     <button type="submit" class="bg-gradient-dynamic text-white px-4 rounded-r-full hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-primary-dynamic">
+                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                     </button>
+                 </form>
+             </div>
+             <!-- Right: Placeholder -->
+             <div class="flex items-center space-x-4"></div>
+         </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden" onclick="toggleMobileSidebar()"></div>
+        <!-- Sidebar: Added pt-16 to push content below navbar -->
+        <aside id="sidebar" class="fixed top-0 left-0 w-64 pt-16 h-screen glassmorphism-darker z-40 transform -translate-x-full md:translate-x-0 sidebar">
+            <!-- Sidebar Content Wrapper (Scrollable) -->
+            <div class="flex flex-col h-full overflow-y-auto">
+                <!-- Mobile Search (Sticky inside scrollable wrapper) -->
+                <div id="mobile-search-container" class="md:hidden">
+                    <form id="search-form-mobile" class="flex items-center w-full">
+                        <input type="text" id="search-input-mobile" placeholder="Cari..." class="flex-grow bg-black/30 border border-white/20 rounded-l-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 placeholder-gray-400 text-sm">
+                        <button type="submit" class="bg-gradient-dynamic text-white px-3 py-2 rounded-r-md hover:opacity-90 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-gray-900 focus:ring-primary-dynamic">
+                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </button>
+                    </form>
+                </div>
+                <!-- Nav Links (Padding adjusted relative to search) -->
+                <nav id="sidebar-nav-links" class="flex-grow px-2 py-4 space-y-1">
+                    <a href="#home" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="home"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>Beranda</a>
+                    <a href="#trending" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="trending"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>Trending</a>
+                    <a href="#playlists" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="playlists"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" /></svg>Playlists Saya</a>
+                    <a href="#lastwatched" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="lastwatched"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>Terakhir Dilihat</a>
+                    <hr class="border-white/10 my-2">
+                    <a href="#settings" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="settings"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527c.44-.315.99-.25 1.365.125l.805.805c.375.375.44 1.02.125 1.44l-.527.737c-.25.35-.272.806-.108 1.204.165.397.505.71.93.78l.893.15c.542.09.94.56.94 1.11v1.093c0 .55-.398 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.164.398-.142.854.108 1.204l.527.738c.315.44.25.99-.125 1.365l-.805.805c-.375.375-1.02.44-1.439.125l-.738-.527c-.35-.25-.806-.272-1.204-.108-.397.165-.71.505-.78.93l-.15.893c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894c-.07-.424-.384-.764-.78-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.439.315-.99.25-1.365-.125l-.805-.805c-.375-.375-.44-1.02-.125-1.44l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.11v-1.093c0-.55.398 1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.164-.398.142-.854-.108-1.204l-.527-.738c-.315-.44-.25-.99.125-1.365l.805-.805c.375-.375 1.02-.44 1.44-.125l.737.527c.35.25.807.272 1.204.108.397-.165.71-.505.78-.93l.15-.893Z" /></svg>Setelan</a>
+                    <a href="#about" class="sidebar-link flex items-center px-3 py-2.5 rounded-lg hover:bg-primary-dynamic/20 transition-colors duration-200" data-view="about"><svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>Tentang</a>
+                </nav>
+                <div id="sleep-timer-display" class="px-4 py-2 text-sm text-center text-gray-400 border-t border-white/10 hidden">Timer Tidur: <span id="sleep-timer-countdown" class="font-semibold text-primary-dynamic"></span></div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="w-full transition-all duration-300 ease-in-out">
+            <div id="view-container" class="p-4 md:p-6 lg:p-8">
+                <div class="flex justify-center items-center h-64"><div class="loader"></div></div>
+            </div>
+            <div id="infinite-scroll-sentinel" class="h-10"></div>
+        </main>
+
+        <!-- Custom Modal -->
+        <div id="custom-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[90]" onclick="hideModal()"></div>
+        <div id="custom-modal" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] max-w-[90%] w-[500px] max-h-[80vh] glassmorphism-darker rounded-lg shadow-xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-white/10"><h2 id="custom-modal-title" class="text-xl font-semibold">Modal Title</h2></div>
+            <div id="custom-modal-content" class="p-6 text-gray-300 overflow-y-auto flex-grow">Modal Content</div>
+            <div id="custom-modal-buttons" class="px-6 py-4 border-t border-white/10 bg-black/20 flex justify-end space-x-3"></div>
+        </div>
+
+        <!-- Custom Toast Notification -->
+        <div id="toast-notification" class="fixed bottom-5 right-5 z-[110] bg-gradient-dynamic text-white py-3 px-5 rounded-lg shadow-lg text-sm transform translate-y-[200%] opacity-0 transition-transform duration-400 ease-out">Notification Message</div>
+
+    </div>
+
+    <!-- YouTube IFrame Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // --- DOM Elements --- (Same as before)
+        const app = document.getElementById('app'); const viewContainer = document.getElementById('view-container'); const searchFormDesktop = document.getElementById('search-form-desktop'); const searchInputDesktop = document.getElementById('search-input-desktop'); const searchFormMobile = document.getElementById('search-form-mobile'); const searchInputMobile = document.getElementById('search-input-mobile'); const sidebar = document.getElementById('sidebar'); const sidebarBackdrop = document.getElementById('sidebar-backdrop'); const mobileMenuButton = document.getElementById('mobile-menu-button'); const mainContent = document.getElementById('main-content'); const logoLink = document.getElementById('logo-link'); const sidebarLinks = document.querySelectorAll('.sidebar-link'); const infiniteScrollSentinel = document.getElementById('infinite-scroll-sentinel'); const sleepTimerDisplay = document.getElementById('sleep-timer-display'); const sleepTimerCountdown = document.getElementById('sleep-timer-countdown'); const modalBackdrop = document.getElementById('custom-modal-backdrop'); const modalElement = document.getElementById('custom-modal'); const modalTitle = document.getElementById('custom-modal-title'); const modalContent = document.getElementById('custom-modal-content'); const modalButtons = document.getElementById('custom-modal-buttons'); const toastElement = document.getElementById('toast-notification');
+
+        // --- State Variables --- (Same as before, added ytPlaylistItems token)
+        let API_KEY = localStorage.getItem('youtubeApiKey') || "AIzaSyBVBHpsUwOFOUX69sW33l4uZq51Iyz90kE"; // Default API key
+        const BASE_URL = "https://www.googleapis.com/youtube/v3";
+        let currentView = 'home'; let currentVideoId = null; let currentChannelId = null; let currentPlaylistId = null; // Added currentPlaylistId
+        let trendingRegion = localStorage.getItem('trendingRegion') || 'ID';
+        let nextPageTokens = { search: null, trending: null, channelVideos: null, channelPlaylists: null, comments: null, replies: {}, ytPlaylistItems: null }; // Added ytPlaylistItems
+        let userPlaylists = JSON.parse(localStorage.getItem('userPlaylists')) || { "Favorit": [] };
+        let lastWatched = JSON.parse(localStorage.getItem('lastWatched')) || [];
+        let settings = JSON.parse(localStorage.getItem('settings')) || { theme: 'default', sleepTimerEnd: null, customApiKey: '', cacheTTL: 900000 };
+        let isLoading = false; let currentSearchQuery = ''; let ytPlayer = null; let sleepTimerInterval = null; let lastWatchedUpdateInterval = null; let currentVideoDataForPlaylist = null; let currentToastTimeout = null;
+
+        // --- Constants & Configs --- (Same as before)
+        const regions = [ { code: 'ID', name: 'Indonesia' }, { code: 'US', name: 'United States' }, { code: 'GB', name: 'United Kingdom' }, { code: 'JP', name: 'Japan' }, { code: 'KR', name: 'South Korea' }, { code: 'IN', name: 'India' }, { code: 'BR', name: 'Brazil' }, { code: 'DE', name: 'Germany' }, { code: 'FR', name: 'France' }, { code: 'RU', name: 'Russia' }, { code: 'MX', name: 'Mexico' }, { code: 'CA', name: 'Canada' }, { code: 'AU', name: 'Australia' }, { code: 'SG', name: 'Singapore' }, { code: 'MY', name: 'Malaysia' } ];
+        const themes = { default: { primary: '59, 130, 246', secondary: '29, 78, 216', gradientStart: '59, 130, 246', gradientEnd: '29, 78, 216', name: 'Biru (Default)' }, red: { primary: '239, 68, 68', secondary: '185, 28, 28', gradientStart: '239, 68, 68', gradientEnd: '185, 28, 28', name: 'Merah' }, green: { primary: '34, 197, 94', secondary: '21, 128, 61', gradientStart: '34, 197, 94', gradientEnd: '21, 128, 61', name: 'Hijau' }, purple: { primary: '168, 85, 247', secondary: '126, 34, 206', gradientStart: '168, 85, 247', gradientEnd: '126, 34, 206', name: 'Ungu' }, orange: { primary: '249, 115, 22', secondary: '194, 65, 12', gradientStart: '249, 115, 22', gradientEnd: '194, 65, 12', name: 'Oranye' }, teal: { primary: '20, 184, 166', secondary: '15, 118, 110', gradientStart: '20, 184, 166', gradientEnd: '15, 118, 110', name: 'Teal' } };
+        const MAX_LAST_WATCHED = 50; const PLACEHOLDER_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; const CACHE_PREFIX = 'st_cache_';
+
+        // --- Helper Functions --- (Same as before)
+        const getApiUrl = (endpoint, params) => { const u=new URLSearchParams(params); u.append('key',API_KEY); return `${BASE_URL}/${endpoint}?${u.toString()}`;};
+        const formatDuration = (iso) => { if (!iso || iso === 'P0D' || iso === 'P0S') return '0:00'; const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/); if(!m) return ''; const h=parseInt(m[1]||0), min=parseInt(m[2]||0), s=parseInt(m[3]||0); if(h>0) return `${h}:${String(min).padStart(2,'0')}:${String(s).padStart(2,'0')}`; return `${min}:${String(s).padStart(2,'0')}`; };
+        const formatViews = (count) => { if(!count) return ''; const c=parseInt(count); if(isNaN(c)) return ''; if(c>=1e9) return (c/1e9).toFixed(1).replace(/\.0$/,'')+' Miliar'; if(c>=1e6) return (c/1e6).toFixed(1).replace(/\.0$/,'')+' Jt'; if(c>=1e3) return (c/1e3).toFixed(1).replace(/\.0$/,'')+' Rb'; return c.toString(); };
+        const timeAgo = (dateStr) => { if(!dateStr) return ''; try { const d=new Date(dateStr), n=new Date(), s=Math.round((n-d)/1e3); if(s<5) return 'baru saja'; const m=Math.round(s/60), h=Math.round(m/60), dy=Math.round(h/24), w=Math.round(dy/7), mo=Math.round(dy/30), y=Math.round(dy/365); if(s<60) return `${s} dtk`; if(m<60) return `${m} mnt`; if(h<24) return `${h} jam`; if(dy<7) return `${dy} hr`; if(w<5) return `${w} mgg`; if(mo<12) return `${mo} bln`; return `${y} thn`; } catch(e){ return ''; }};
+        const formatNumber = (num) => { if(!num) return '0'; try { return parseInt(num).toLocaleString('id-ID'); } catch(e){ return '0'; }};
+        const showLoadingIndicator = () => { let l=mainContent.querySelector('.main-loader'); if(!l){l=document.createElement('div'); l.className='main-loader fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999]'; l.innerHTML='<div class="loader"></div>'; mainContent.appendChild(l);} l.classList.remove('hidden'); };
+        const hideLoadingIndicator = () => { const l=mainContent.querySelector('.main-loader'); if(l) l.classList.add('hidden'); };
+        const showLoadMoreButton = (id, action, text = 'Muat Lebih Banyak') => { const c=document.getElementById(id); if(!c) return; removeLoadMoreButton(id); const b=document.createElement('button'); b.textContent=text; b.className='load-more-button block mx-auto my-6 px-6 py-3 bg-gradient-dynamic text-white rounded-full shadow-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-primary-dynamic transition-opacity duration-300'; b.onclick=action; c.appendChild(b); };
+        const removeLoadMoreButton = (id) => { const c=document.getElementById(id); const b=c?.querySelector('.load-more-button'); if(b) b.remove(); };
+
+        // --- Caching Functions --- (Same as before)
+        const generateCacheKey = (url) => { try { const u=new URL(url); const p=new URLSearchParams(u.search); p.delete('key'); p.sort(); return `${CACHE_PREFIX}${u.pathname}?${p.toString()}`; } catch(e){ console.error("Cache key error:",e); return null; }};
+        const getCachedData = (key) => { if (!key || settings.cacheTTL === 0) return null; try { const item = localStorage.getItem(key); if (!item) return null; const { data, timestamp } = JSON.parse(item); const expired = (Date.now() - timestamp) > settings.cacheTTL; if (expired) { localStorage.removeItem(key); return null; } return data; } catch (e) { console.error("Cache read error:",e); localStorage.removeItem(key); return null; }};
+        const setCachedData = (key, data) => { if (!key || settings.cacheTTL === 0) return; try { const item = { data: data, timestamp: Date.now() }; localStorage.setItem(key, JSON.stringify(item)); } catch (e) { console.error("Cache write error:",e); if (e.name === 'QuotaExceededError') { showError("Cache penuh. Coba bersihkan."); clearApiCache(true); } }};
+        const clearApiCache = (silent = false) => { let count = 0; try { Object.keys(localStorage).forEach(key => { if (key.startsWith(CACHE_PREFIX)) { localStorage.removeItem(key); count++; } }); if (!silent) showToast(`Cache API (${count} item) dibersihkan.`); console.log(`Cleared ${count} cache items.`); } catch (e) { console.error("Cache clear error:",e); if (!silent) showError("Gagal bersihkan cache API."); } };
+
+        // --- fetchData with Caching --- (Same as before)
+        const fetchData = async (url) => { const key = generateCacheKey(url); const cached = getCachedData(key); if (cached) { hideLoadingIndicator(); return cached; } if (!API_KEY || API_KEY === "YOUR_YOUTUBE_API_KEY") { showError("API Key belum diatur."); return null; } isLoading = true; showLoadingIndicator(); try { const res = await fetch(url); if (!res.ok) { const errData = await res.json(); console.error("API Error:", res.status, errData); let msg = `Error ${res.status}: ${errData.error?.message || res.statusText}`; if (res.status === 403) msg += " Kuota API habis/Key salah."; showError(msg); isLoading = false; hideLoadingIndicator(); return null; } const data = await res.json(); setCachedData(key, data); isLoading = false; hideLoadingIndicator(); return data; } catch (err) { console.error("Fetch Error:", err); showError(`Gagal ambil data: ${err.message}.`); isLoading = false; hideLoadingIndicator(); return null; } };
+
+        // --- Custom UI --- (Same as before)
+        const showToast = (message, type = 'success') => { if (currentToastTimeout) clearTimeout(currentToastTimeout); toastElement.textContent = message; toastElement.className = 'fixed bottom-5 right-5 z-[110] py-3 px-5 rounded-lg shadow-lg text-sm transform translate-y-[200%] opacity-0 transition-transform duration-400 ease-out text-white'; if (type === 'error') toastElement.classList.add('bg-red-600'); else if (type === 'warning') toastElement.classList.add('bg-yellow-500'); else toastElement.classList.add('bg-gradient-dynamic'); requestAnimationFrame(() => { toastElement.classList.add('show'); }); currentToastTimeout = setTimeout(() => { toastElement.classList.remove('show'); }, 3500); }; const showError = (message) => showToast(message, 'error'); const showModal = (title, content, buttons = []) => { modalTitle.textContent = title; modalContent.innerHTML = content; modalButtons.innerHTML = ''; buttons.forEach(b => { const btn = document.createElement('button'); btn.textContent = b.text; btn.className = b.classes || 'px-4 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90'; btn.onclick = () => { if (b.onClick) b.onClick(); if (!b.keepOpen) hideModal(); }; modalButtons.appendChild(btn); }); modalElement.classList.remove('hidden'); modalBackdrop.classList.remove('hidden'); }; const hideModal = () => { modalElement.classList.add('hidden'); modalBackdrop.classList.add('hidden'); }; const showConfirmationModal = (title, msg, onConfirm) => { showModal(title, msg, [ { text: 'Batal', classes: 'px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500' }, { text: 'Konfirmasi', classes: 'px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500', onClick: onConfirm } ]); };
+
+        // --- Rendering --- (Same, uses updated fetchData which handles cache)
+        const renderVideoCard = (video, isPlaylistVideo = false, playlistName = null, videoIndex = -1) => { const s = video.snippet || {}; const t = s.thumbnails || {}; const c = video.contentDetails || {}; const st = video.statistics || {}; const vid = typeof video.id === 'object' ? video.id.videoId : video.id; const thumb = t.medium?.url || t.default?.url || PLACEHOLDER_IMAGE; const card = document.createElement('div'); card.className = 'video-card card glassmorphism rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl flex flex-col'; card.dataset.videoId = vid; card.innerHTML = `<a href="#watch/${vid}" data-video-id="${vid}" class="relative block aspect-video group"><img src="${thumb}" alt="${s.title||''}" class="w-full h-full object-cover bg-black/10" loading="lazy" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMAGE}';">${c.duration?`<span class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">${formatDuration(c.duration)}</span>`:''}<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"><svg class="w-12 h-12 text-white/80" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"/></svg></div></a><div class="p-3 flex-grow flex flex-col relative"><a href="#watch/${vid}" data-video-id="${vid}" class="block mb-1"><h3 class="text-base font-semibold leading-snug line-clamp-2 text-gray-100 hover:text-primary-dynamic">${s.title||'Judul Tidak Tersedia'}</h3></a>${s.channelTitle?`<a href="#channel/${s.channelId}" data-channel-id="${s.channelId}" class="text-sm text-gray-400 hover:text-gray-200 line-clamp-1 mb-1">${s.channelTitle}</a>`:`<span class="text-sm text-gray-500 italic mb-1">Channel Tdk Diketahui</span>`}<div class="text-xs text-gray-400 mt-auto flex items-center flex-wrap gap-x-2"><span class="view-count">${st.viewCount?formatViews(st.viewCount)+' x ditonton':''}</span>${st.viewCount?'<span class="opacity-50 view-separator">•</span>':'<span class="opacity-50 view-separator hidden">•</span>'}<span class="time-ago">${timeAgo(s.publishedAt)}</span></div>${isPlaylistVideo&&playlistName?`<button title="Hapus dari '${playlistName}'" onclick="event.stopPropagation(); handleRemoveFromPlaylist('${playlistName.replace(/'/g,"\\'")}',${videoIndex})" class="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-colors duration-200 z-10"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></button>`:''}</div>`; card.querySelectorAll('a[data-video-id]').forEach(l=>l.addEventListener('click',(e)=>{e.preventDefault();navigateTo(`watch/${vid}`)})); if(s.channelId){card.querySelectorAll('a[data-channel-id]').forEach(l=>l.addEventListener('click',(e)=>{e.preventDefault();navigateTo(`channel/${s.channelId}`)}))} return card; };
+        const renderChannelPlaylistCard = (playlist) => { const s = playlist.snippet || {}; const pId = playlist.id; const c = playlist.contentDetails || {}; const thumb = s.thumbnails?.medium?.url || s.thumbnails?.default?.url || PLACEHOLDER_IMAGE; return `<a href="#playlist/yt/${pId}" data-playlist-id="${pId}" class="channel-playlist-card glassmorphism rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl flex flex-col group"><div class="relative block aspect-video bg-black/30"><img src="${thumb}" alt="${s.title||''}" class="w-full h-full object-cover bg-black/10" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"><div class="playlist-thumbnail-overlay text-white"><svg class="w-8 h-8 mb-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/></svg><span class="text-xs">Lihat Playlist</span></div><span class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">${c.itemCount||0} video</span></div><div class="p-3"><h3 class="text-base font-semibold leading-snug line-clamp-2 text-gray-100 group-hover:text-primary-dynamic">${s.title||'Judul Playlist Tdk Ada'}</h3><p class="text-xs text-gray-400 mt-1 line-clamp-1">${timeAgo(s.publishedAt)}</p></div></a>`; };
+        const renderComment = (cThread, isReply=false) => { const c = isReply ? (cThread.snippet || {}) : (cThread.snippet?.topLevelComment?.snippet || {}); const cId = isReply ? cThread.id : cThread.snippet?.topLevelComment?.id; const rCount = isReply ? 0 : (cThread.snippet?.totalReplyCount || 0); const author = c.authorDisplayName || 'Anonim'; const avatar = c.authorProfileImageUrl || PLACEHOLDER_IMAGE; return `<div class="comment-card flex space-x-3 ${isReply?'ml-4':''}"><img src="${avatar}" alt="${author}" class="w-8 h-8 rounded-full shrink-0 mt-1 bg-gray-700" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"><div class="flex-grow"><div class="flex items-center space-x-2 mb-1"><span class="font-semibold text-sm text-gray-200">${author}</span><span class="text-xs text-gray-400">${timeAgo(c.publishedAt)}</span></div><p class="text-sm text-gray-300 whitespace-pre-wrap break-words">${(c.textDisplay||'').replace(/<a href="([^"]+)"[^>]*>(.*?)<\/a>/g,'<a href="$1" target="_blank" rel="noopener noreferrer" class="text-primary-dynamic hover:underline">$2</a>')}</p><div class="flex items-center space-x-4 mt-2 text-xs text-gray-400"><span class="flex items-center space-x-1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z"/></svg><span>${formatNumber(c.likeCount)}</span></span></div>${!isReply&&rCount>0&&cId?`<button class="text-sm text-primary-dynamic font-semibold mt-2 hover:text-blue-400" onclick="toggleReplies('${cId}',this,${rCount})"><span class="inline-flex items-center"><svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>Lihat ${rCount} balasan</span></button><div id="replies-${cId}" class="replies-container hidden"><div class="flex items-center justify-center p-2"><div class="loader !w-5 !h-5 !border-2"></div></div></div>`:''}</div></div>`; };
+        const renderHome = async () => { viewContainer.innerHTML = `<div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4"><h1 class="text-2xl md:text-3xl font-bold gradient-text">Rekomendasi</h1>${renderRegionSelector()}</div><div id="home-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"><div class="col-span-full flex justify-center items-center h-64"><div class="loader"></div></div></div>`; addRegionSelectorListener('home'); await loadTrendingVideos('home-videos-grid'); };
+        const renderTrending = async () => { viewContainer.innerHTML = `<div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4"><h1 class="text-2xl md:text-3xl font-bold gradient-text">Trending</h1>${renderRegionSelector()}</div><div id="trending-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"><div class="col-span-full flex justify-center items-center h-64"><div class="loader"></div></div></div>`; addRegionSelectorListener('trending'); await loadTrendingVideos('trending-videos-grid'); };
+        const renderRegionSelector = () => { return `<div class="flex items-center space-x-2"><label for="region-select" class="text-sm text-gray-400">Region:</label><select id="region-select" class="custom-select bg-black/30 border border-white/20 rounded-md py-1 px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-dynamic">${regions.map(r => `<option value="${r.code}" ${r.code === trendingRegion ? 'selected' : ''}>${r.name}</option>`).join('')}</select></div>`; };
+        const addRegionSelectorListener = (view) => { const s=document.getElementById('region-select'); if(s){s.addEventListener('change', async (e) => { trendingRegion = e.target.value; localStorage.setItem('trendingRegion', trendingRegion); nextPageTokens.trending = null; const gridId = view === 'home' ? 'home-videos-grid' : 'trending-videos-grid'; const grid = document.getElementById(gridId); if(grid){grid.innerHTML = `<div class="col-span-full flex justify-center items-center h-64"><div class="loader"></div></div>`; await loadTrendingVideos(gridId);} }); }};
+        const loadTrendingVideos = async (contId, append=false) => { const token=append?nextPageTokens.trending:null; const url=getApiUrl('videos',{part:'snippet,contentDetails,statistics',chart:'mostPopular',regionCode:trendingRegion,maxResults:20,pageToken:token||''}); const data=await fetchData(url); const grid=document.getElementById(contId); if(!grid)return; if(!data){if(!append)grid.innerHTML=`<p class="col-span-full text-center text-red-500">Gagal memuat.</p>`; removeLoadMoreButton(contId); return;} nextPageTokens.trending=data.nextPageToken||null; if(!append)grid.innerHTML=''; else removeLoadMoreButton(contId); if(data.items.length===0&&!append){grid.innerHTML=`<p class="col-span-full text-center text-gray-400">Tidak ada video.</p>`;} data.items.forEach(v=>grid.appendChild(renderVideoCard(v))); if(nextPageTokens.trending)showLoadMoreButton(contId,()=>loadTrendingVideos(contId,true)); };
+        const renderSearchResults = async (query, append=false) => { const token=append?nextPageTokens.search:null; const url=getApiUrl('search',{part:'snippet',q:query,type:'video',maxResults:20,pageToken:token||''}); const data=await fetchData(url); if(!data){if(!append)viewContainer.innerHTML=`<p class="text-center text-red-500">Gagal mencari.</p>`; isLoading=false; return;} nextPageTokens.search=data.nextPageToken||null; if(data.items.length===0&&!append){viewContainer.innerHTML=`<h1 class="text-2xl md:text-3xl font-bold mb-6">Hasil: <span class="gradient-text">${query}</span></h1><p class="text-center text-gray-400">Tidak ada hasil.</p>`; return;} const vids=data.items.map(i=>i.id.videoId).join(','); const dMap=await fetchVideoDetailsByIds(vids); if(!append){currentSearchQuery=query; viewContainer.innerHTML=`<h1 class="text-2xl md:text-3xl font-bold mb-6">Hasil: <span class="gradient-text">${query}</span></h1><div id="search-results-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"></div>`; setupInfiniteScrollObserver();} const grid=document.getElementById('search-results-grid'); if(grid){data.items.forEach(item=>{const full=dMap.get(item.id.videoId); const combo={id:item.id.videoId, snippet:item.snippet, contentDetails:full?.contentDetails, statistics:full?.statistics}; if(!combo.snippet.channelTitle&&full?.snippet?.channelTitle)combo.snippet.channelTitle=full.snippet.channelTitle; if(!combo.snippet.channelId&&full?.snippet?.channelId)combo.snippet.channelId=full.snippet.channelId; if(!combo.snippet.publishedAt&&full?.snippet?.publishedAt)combo.snippet.publishedAt=full.snippet.publishedAt; if(!combo.snippet.thumbnails&&full?.snippet?.thumbnails)combo.snippet.thumbnails=full.snippet.thumbnails; grid.appendChild(renderVideoCard(combo));});} isLoading=false; };
+        const renderWatchPage = async (videoId) => { const startTime=history.state?.startTime||0; currentVideoId=videoId; const url=getApiUrl('videos',{part:'snippet,contentDetails,statistics',id:videoId}); const data=await fetchData(url); if(!data?.items?.length){showError("Gagal muat detail video."); viewContainer.innerHTML=`<p class="text-center text-red-500">Video tidak tersedia.</p>`; ytPlayer=null; currentVideoDataForPlaylist=null; return;} const v=data.items[0]; const s=v.snippet; const st=v.statistics; const d=v.contentDetails; currentVideoDataForPlaylist={id:v.id,title:s.title,channel:s.channelTitle,channelId:s.channelId,thumbnail:s.thumbnails?.medium?.url||s.thumbnails?.default?.url,duration:d.duration}; let avatar=PLACEHOLDER_IMAGE; if(s.channelId){const chUrl=getApiUrl('channels',{part:'snippet',id:s.channelId}); const chData=await fetchData(chUrl); avatar=chData?.items?.[0]?.snippet?.thumbnails?.default?.url||PLACEHOLDER_IMAGE;} nextPageTokens.comments=null; nextPageTokens.replies={}; const cData=await fetchComments(videoId); const cHTML=cData?.items?.length?cData.items.map(ct=>renderComment(ct)).join(''):'<p class="text-gray-400 text-sm mt-4">Belum ada komentar.</p>'; nextPageTokens.comments=cData?.nextPageToken||null; viewContainer.innerHTML=`<div class="flex flex-col lg:flex-row gap-6 lg:gap-8"><div class="w-full lg:w-[calc(66.666%-1rem)] shrink-0"><div class="iframe-container mb-4 rounded-lg overflow-hidden shadow-lg glassmorphism"><div id="youtube-player"></div></div><h1 class="text-xl md:text-2xl font-bold mb-2 text-gray-100">${s.title}</h1><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 text-sm text-gray-400 space-y-2 sm:space-y-0"><div class="flex items-center space-x-4"><span>${formatViews(st.viewCount)} x ditonton</span><span class="opacity-50">•</span><span>${timeAgo(s.publishedAt)}</span></div><div class="flex items-center space-x-3 md:space-x-4"><span class="flex items-center space-x-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg><span>${formatNumber(st.likeCount)}</span></span><button id="add-to-playlist-button" onclick='openAddToPlaylistModal()' class="flex items-center space-x-1.5 hover:text-white bg-primary-dynamic/20 px-3 py-1.5 rounded-full text-primary-dynamic hover:bg-primary-dynamic/40 transition-colors text-xs sm:text-sm"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><span>Simpan</span></button></div></div><div class="py-4 border-t border-b border-white/10 mb-6"><div class="flex items-center space-x-4 mb-4"><a href="#channel/${s.channelId}" data-channel-id="${s.channelId}" class="shrink-0"><img src="${avatar}" alt="${s.channelTitle}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-700" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"></a><div class="flex-grow min-w-0"><a href="#channel/${s.channelId}" data-channel-id="${s.channelId}" class="text-base font-semibold text-gray-100 hover:text-primary-dynamic line-clamp-1">${s.channelTitle}</a></div></div><div id="video-description" class="text-sm text-gray-300 whitespace-pre-wrap max-h-24 overflow-hidden transition-[max-height] duration-300 ease-in-out">${(s.description||'').replace(/((?:https?:\/\/)?(?:www\.)?[\w.-]+\.[a-zA-Z]{2,}(?:\/[\w.-]*)*)/g,'<a href="$1" target="_blank" rel="noopener noreferrer" class="text-primary-dynamic hover:underline">$1</a>')}</div>${s.description&&s.description.split('\n').length>4?'<button id="show-more-desc" onclick="toggleDescription()" class="text-sm font-semibold text-gray-400 hover:text-white mt-2">Lebih Banyak</button>':''}</div></div><div class="w-full lg:w-[calc(33.333%-1rem)]"><h2 class="text-lg font-semibold mb-4 text-gray-100">Komentar ${st.commentCount?`(${formatNumber(st.commentCount)})`:''}</h2><div id="comments-container" class="space-y-0 max-h-[calc(100vh-200px)] overflow-y-auto pr-1">${cHTML}</div>${nextPageTokens.comments?`<button id="load-more-comments" onclick="loadMoreComments('${videoId}')" class="mt-4 text-sm text-primary-dynamic font-semibold hover:text-blue-400 w-full text-center py-2 rounded hover:bg-primary-dynamic/10">Muat komentar lain</button>`:''}</div></div>`; initializePlayer(videoId,startTime); viewContainer.querySelectorAll('a[data-channel-id]').forEach(l=>l.addEventListener('click',(e)=>{e.preventDefault();navigateTo(`channel/${s.channelId}`)})); };
+        const renderChannelPage = async (channelId) => { currentChannelId=channelId; nextPageTokens.channelVideos=null; nextPageTokens.channelPlaylists=null; const chUrl=getApiUrl('channels',{part:'snippet,statistics,brandingSettings',id:channelId}); const chData=await fetchData(chUrl); if(!chData?.items?.length){showError("Gagal muat channel."); viewContainer.innerHTML=`<p class="text-center text-red-500">Channel tidak ada.</p>`; return;} const ch=chData.items[0]; const s=ch.snippet; const st=ch.statistics; const b=ch.brandingSettings; const vData=await fetchChannelContent(channelId,'videos'); const banner=b.image?.bannerExternalUrl||null; const avatar=s.thumbnails?.medium?.url||PLACEHOLDER_IMAGE; viewContainer.innerHTML=`<div class="channel-header mb-6">${banner?`<div class="w-full h-32 md:h-48 lg:h-64 rounded-lg mb-4 shadow-lg overflow-hidden"><img src="${banner}" alt="${s.title} Banner" class="w-full h-full object-cover"></div>`:'<div class="w-full h-32 md:h-48 lg:h-64 bg-gradient-dynamic rounded-lg mb-4 shadow-lg"></div>'}<div class="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 px-2"><img src="${avatar}" alt="${s.title}" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-dark-dynamic shadow-xl -mt-12 md:-mt-16 shrink-0 bg-gray-700" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"><div class="flex-grow text-center sm:text-left min-w-0"><h1 class="text-2xl md:text-3xl font-bold text-gray-100 truncate" title="${s.title}">${s.title}</h1><p class="text-sm text-gray-400 mt-1 truncate">${s.customUrl?`@${s.customUrl} • `:''}${st.hiddenSubscriberCount?'':`${formatViews(st.subscriberCount)} subscriber • `}${formatNumber(st.videoCount)} video</p></div></div>${s.description?`<p class="text-sm text-gray-300 mt-4 px-2 line-clamp-3">${s.description}</p>`:''}</div><div class="border-b border-white/10 mb-6 flex space-x-4 px-2 overflow-x-auto sticky top-16 bg-dark-dynamic/80 backdrop-blur-sm z-20 -mt-1 pt-1"><button id="tab-videos" class="py-2 px-1 border-b-2 border-primary-dynamic text-primary-dynamic font-semibold whitespace-nowrap" onclick="switchChannelTab('videos')">Video</button><button id="tab-playlists" class="py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-gray-100 hover:border-gray-500 whitespace-nowrap" onclick="switchChannelTab('playlists')">Playlist</button></div><div id="channel-content-area">${renderChannelVideos(vData)}</div>`; if(nextPageTokens.channelVideos)showLoadMoreButton('channel-videos-grid',()=>loadMoreChannelContent('videos')); viewContainer.querySelectorAll('a[data-playlist-id]').forEach(l=>{l.addEventListener('click',(e)=>{e.preventDefault();navigateTo(`playlist/yt/${l.dataset.playlistId}`)})}); };
+        const renderChannelVideos = (vData) => { if(!vData?.items?.length)return `<div id="channel-videos-grid" class="text-center text-gray-400 py-8">Belum ada video.</div>`; const vids=vData.items.map(i=>i.id.videoId).join(','); fetchVideoDetailsByIds(vids).then(dMap=>{const grid=document.getElementById('channel-videos-grid'); grid?.querySelectorAll('.video-card').forEach(c=>{const vId=c.dataset.videoId; const d=dMap.get(vId); if(d){const durS=c.querySelector('.aspect-video span'); if(durS&&d.contentDetails?.duration){durS.textContent=formatDuration(d.contentDetails.duration); durS.classList.remove('hidden');} else if(durS){durS.classList.add('hidden');} const statS=c.querySelector('.view-count'); const sepS=c.querySelector('.view-separator'); if(statS&&d.statistics?.viewCount){statS.textContent=`${formatViews(d.statistics.viewCount)} x ditonton`; sepS?.classList.remove('hidden');} else {statS.textContent=''; sepS?.classList.add('hidden');}}})}); return `<div id="channel-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">${vData.items.map(item=>{const simpleV={id:item.id.videoId,snippet:item.snippet}; const html=renderVideoCard(simpleV).outerHTML; return html.replace('<div class="p-3',`<div data-published-at="${item.snippet.publishedAt}" class="p-3"`).replace(/<span class="absolute bottom-1 right-1.*?<\/span>/,'<span class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded hidden"></span>').replace(/<span class="view-count">.*?<\/span>/,'<span class="view-count"></span>').replace('<span class="opacity-50 view-separator">•</span>','<span class="opacity-50 view-separator hidden">•</span>')}).join('')}</div>`; };
+        const renderChannelPlaylists = (pData) => { if(!pData?.items?.length)return `<div id="channel-playlists-grid" class="text-center text-gray-400 py-8">Tidak ada playlist.</div>`; return `<div id="channel-playlists-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">${pData.items.map(renderChannelPlaylistCard).join('')}</div>`; };
+        const renderPlaylistListPage = () => { const names=Object.keys(userPlaylists); viewContainer.innerHTML=`<div class="flex justify-between items-center mb-6"><h1 class="text-2xl md:text-3xl font-bold gradient-text">Playlists Saya</h1><button onclick="openCreatePlaylistModal()" class="bg-gradient-dynamic text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-dynamic focus:ring-primary-dynamic flex items-center space-x-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><span>Buat Playlist</span></button></div>${names.length===0?`<div class="text-center py-12 glassmorphism rounded-lg"><svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/></svg><p class="text-gray-400">Belum ada playlist.</p></div>`:`<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">${names.map(n=>renderPlaylistItem(n,userPlaylists[n])).join('')}</div>`}`; };
+        const renderPlaylistItem = (name, videos) => { const thumb=videos[0]?.thumbnail||PLACEHOLDER_IMAGE; const count=videos.length; const escaped=name.replace(/'/g,"\\'").replace(/"/g,"&quot;"); return `<div class="playlist-item-card glassmorphism rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl flex flex-col group"><a href="#playlist/${encodeURIComponent(name)}" data-playlist-name="${escaped}" class="relative block aspect-video bg-black/30"><img src="${thumb}" alt="PL ${name}" class="w-full h-full object-cover bg-black/10" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"><div class="playlist-thumbnail-overlay text-white"><svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/></svg><span class="mt-1 text-sm">Lihat Playlist</span></div><span class="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">${count} video</span></a><div class="p-3 flex justify-between items-center"><a href="#playlist/${encodeURIComponent(name)}" data-playlist-name="${escaped}" class="flex-grow min-w-0"><h3 class="text-base font-semibold leading-snug truncate text-gray-100 group-hover:text-primary-dynamic" title="${name}">${name}</h3></a><div class="shrink-0 ml-2"><button title="Hapus Playlist '${name}'" onclick="event.stopPropagation(); confirmDeletePlaylist('${escaped}')" class="p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-500/10"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg></button></div></div></div>`; };
+        const renderPlaylistDetailsPage = (playlistName) => { const dName = decodeURIComponent(playlistName); const videos = userPlaylists[dName] || []; viewContainer.innerHTML=`<div class="flex items-center mb-6 gap-4"><button onclick="navigateTo('playlists')" title="Kembali" class="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white shrink-0"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg></button><h1 class="text-2xl md:text-3xl font-bold gradient-text truncate flex-grow min-w-0" title="${dName}">${dName}</h1><span class="ml-auto text-sm text-gray-400 shrink-0">${videos.length} video</span></div>${videos.length===0?`<div class="text-center py-12 glassmorphism rounded-lg"><svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 15.75-2.489-2.489m0 0a3.375 3.375 0 1 0-4.773-4.773 3.375 3.375 0 0 0 4.774 4.774ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg><p class="text-gray-400">Playlist kosong.</p></div>`:`<div id="playlist-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">${videos.map((pv,idx)=>{const cardData={id:pv.id, snippet:{title:pv.title||'No Title',channelTitle:pv.channel||'No Channel',channelId:pv.channelId||null,thumbnails:pv.thumbnail?{medium:{url:pv.thumbnail},default:{url:pv.thumbnail}}:{},publishedAt:pv.addedAt?new Date(pv.addedAt).toISOString():null}, contentDetails:{duration:pv.duration||null}, statistics:{}}; return renderVideoCard(cardData,true,dName,idx).outerHTML}).join('')}</div>`}`; };
+        const renderLastWatchedPage = () => { const sorted=[...lastWatched].sort((a,b)=>b.lastWatchedTimestamp-a.lastWatchedTimestamp); viewContainer.innerHTML=`<div class="flex justify-between items-center mb-6"><h1 class="text-2xl md:text-3xl font-bold gradient-text">Terakhir Dilihat</h1>${sorted.length>0?`<button onclick="confirmClearLastWatched()" class="text-sm text-red-500 hover:text-red-400 flex items-center space-x-1"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg><span>Bersihkan</span></button>`:''}</div>${sorted.length===0?`<div class="text-center py-12 glassmorphism rounded-lg"><svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg><p class="text-gray-400">Belum ada riwayat.</p></div>`:`<div id="last-watched-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">${sorted.map(renderLastWatchedCard).join('')}</div>`}`; viewContainer.querySelectorAll('.last-watched-card a[data-video-id]').forEach(l=>l.addEventListener('click',(e)=>{e.preventDefault(); const vid=l.dataset.videoId; const start=l.dataset.startTime||0; navigateTo(`watch/${vid}`,{startTime:parseFloat(start)})})); viewContainer.querySelectorAll('.last-watched-card a[data-channel-id]').forEach(l=>l.addEventListener('click',(e)=>{e.preventDefault(); e.stopPropagation(); navigateTo(`channel/${l.dataset.channelId}`)})); };
+        const renderLastWatchedCard = (video) => { const durSec=parseISODuration(video.duration); const watchedSec=video.watchedSeconds||0; const progress=(durSec&&durSec>0&&watchedSec>=0)?Math.min(100,(watchedSec/durSec)*100):0; const thumb=video.thumbnail||PLACEHOLDER_IMAGE; return `<div class="last-watched-card card glassmorphism rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl flex flex-col group"><a href="#watch/${video.id}" data-video-id="${video.id}" data-start-time="${watchedSec}" class="relative block aspect-video"><img src="${thumb}" alt="${video.title||'Video'}" class="w-full h-full object-cover bg-black/10" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}';"><div class="absolute bottom-0 left-0 w-full h-1.5 bg-gray-500/50"><div class="h-full bg-primary-dynamic" style="width: ${progress}%"></div></div>${video.duration?`<span class="absolute top-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">${formatDuration(video.duration)}</span>`:''}<div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white text-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"><svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"/></svg><span class="mt-1 text-sm font-semibold">Lanjutkan</span>${watchedSec>0?`<span class="text-xs mt-0.5">dari ${formatSeconds(watchedSec)}</span>`:''}</div></a><div class="p-3"><a href="#watch/${video.id}" data-video-id="${video.id}" data-start-time="${watchedSec}" class="block mb-1"><h3 class="text-base font-semibold leading-snug line-clamp-2 text-gray-100 group-hover:text-primary-dynamic">${video.title||'Judul Tdk Ada'}</h3></a>${video.channel&&video.channelId?`<a href="#channel/${video.channelId}" data-channel-id="${video.channelId}" class="text-sm text-gray-400 hover:text-gray-200 line-clamp-1">${video.channel}</a>`:`<span class="text-sm text-gray-500 italic">Channel Tdk Diketahui</span>`}</div></div>`; };
+        const renderSettingsPage = () => { const apiKey=localStorage.getItem('youtubeApiKey')||''; const ttlOpts=[{value:0,label:'Nonaktif'},{value:300000,label:'5 Menit'},{value:900000,label:'15 Menit (Default)'},{value:3600000,label:'1 Jam'},{value:86400000,label:'1 Hari'}]; viewContainer.innerHTML=`<h1 class="text-2xl md:text-3xl font-bold mb-8 gradient-text">Setelan Aplikasi</h1><div class="settings-grid"><div class="glassmorphism p-5 rounded-lg settings-section"><h2 class="text-lg font-semibold mb-4 text-gray-100">Tema</h2><div class="space-y-3"><label for="theme-select" class="block text-sm font-medium text-gray-300">Aksen Warna:</label><select id="theme-select" class="custom-select w-full bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200">${Object.entries(themes).map(([k,t])=>`<option value="${k}" ${settings.theme===k?'selected':''}>${t.name}</option>`).join('')}</select></div></div><div class="glassmorphism p-5 rounded-lg settings-section"><h2 class="text-lg font-semibold mb-4 text-gray-100">Timer Tidur</h2><div class="flex flex-col sm:flex-row items-stretch gap-3 mb-3"><input type="number" id="sleep-timer-minutes" min="1" placeholder="Menit" class="flex-grow bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 placeholder-gray-400"><button id="set-sleep-timer" class="shrink-0 px-4 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90 whitespace-nowrap">Set Timer</button></div><button id="cancel-sleep-timer" class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 ${!settings.sleepTimerEnd?'hidden':''}">Batalkan Timer</button><p id="timer-status" class="text-sm text-gray-400 mt-3"></p></div><div class="glassmorphism p-5 rounded-lg settings-section md:col-span-2"><h2 class="text-lg font-semibold mb-4 text-gray-100">Kinerja & API</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><h3 class="text-base font-medium mb-2 text-gray-200">Kunci API Kustom</h3><p class="text-xs text-gray-400 mb-2">Gunakan kunci API Anda sendiri.</p><div class="flex items-stretch gap-2"><input type="password" id="custom-api-key" placeholder="Kunci API YouTube" value="${apiKey}" class="flex-grow bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 text-sm"><button id="save-api-key" title="Simpan" class="shrink-0 px-3 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></button><button id="reset-api-key" title="Reset" class="shrink-0 px-3 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-500"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0 0 11.667 0l3.181-3.183m-4.991 0l-3.182-3.182a8.25 8.25 0 0 0-11.667 0L2.985 14.652z"/></svg></button></div></div><div><h3 class="text-base font-medium mb-2 text-gray-200">Durasi Cache API</h3><p class="text-xs text-gray-400 mb-2">Kurangi penggunaan API.</p><select id="cache-ttl-select" class="custom-select w-full bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 text-sm">${ttlOpts.map(o=>`<option value="${o.value}" ${settings.cacheTTL===o.value?'selected':''}>${o.label}</option>`).join('')}</select></div></div></div><div class="glassmorphism p-5 rounded-lg settings-section"><h2 class="text-lg font-semibold mb-4 text-gray-100">Umpan Balik</h2><p class="text-sm text-gray-400 mb-3">Punya saran/laporan bug?</p><a href="mailto:deltaastra24@gmail.com?subject=Feedback%20SearchTube" class="inline-block px-5 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90">Kirim Email</a></div><div class="glassmorphism p-5 rounded-lg settings-section"><h2 class="text-lg font-semibold mb-4 text-red-500">Manajemen Data</h2><div class="flex flex-wrap gap-3"><button id="clear-playlists" class="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-600 text-sm">Hapus Playlist</button><button id="clear-last-watched" class="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-600 text-sm">Hapus Riwayat</button><button id="clear-api-cache" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-500 text-sm">Bersihkan Cache API</button><button id="clear-all-data" class="px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 font-semibold text-sm">Hapus Semua Data</button></div></div></div>`; document.getElementById('theme-select')?.addEventListener('change',handleThemeChange); document.getElementById('set-sleep-timer')?.addEventListener('click',handleSetSleepTimer); document.getElementById('cancel-sleep-timer')?.addEventListener('click',()=>handleCancelSleepTimer()); document.getElementById('save-api-key')?.addEventListener('click',handleSaveApiKey); document.getElementById('reset-api-key')?.addEventListener('click',handleResetApiKey); document.getElementById('cache-ttl-select')?.addEventListener('change',handleCacheTTLChange); document.getElementById('clear-playlists')?.addEventListener('click',confirmClearPlaylists); document.getElementById('clear-last-watched')?.addEventListener('click',confirmClearLastWatched); document.getElementById('clear-api-cache')?.addEventListener('click',()=>clearApiCache()); document.getElementById('clear-all-data')?.addEventListener('click',confirmClearAllData); updateSleepTimerStatus(); };
+        const renderAboutPage = () => { viewContainer.innerHTML=`<div class="max-w-3xl mx-auto glassmorphism p-6 md:p-8 rounded-lg shadow-xl"><h1 class="text-3xl md:text-4xl font-bold mb-6 text-center gradient-text">Tentang SearchTube</h1><div class="space-y-6 text-gray-300 text-base leading-relaxed"><p>Nonton YouTube tanpa gangguan, tampilan keren, plus fitur tambahan.</p><p>Dibangun pakai <strong class="text-primary-dynamic">YouTube Data API v3</strong>.</p><h2 class="text-xl font-semibold text-gray-100 pt-4 border-t border-white/10">Fitur:</h2><ul class="list-disc list-inside space-y-2 pl-4"><li>Streaming video</li><li>Pencarian + infinite scroll</li><li>Trending per region</li><li>Halaman Channel + load more</li><li>Playlist Kustom & Channel</li><li>Terakhir Dilihat + resume</li><li>Responsif</li><li>Setelan (Tema, Timer, API Key, Cache, Data)</li><li>Lihat Komentar & Balasan</li><li>Tampilan Glassmorphism</li></ul><h2 class="text-xl font-semibold text-gray-100 pt-4 border-t border-white/10">Catatan:</h2><ul class="list-disc list-inside space-y-2 pl-4"><li><strong class="text-yellow-400">Kuota API:</strong> Bisa habis. Atur API Key & Cache di Setelan.</li><li><strong class="text-red-500">Bukan Pengganti YT:</strong> Login, upload, subscribe resmi tdk ada.</li><li><strong class="text-blue-400">Proyek Belajar.</strong></li></ul><p class="pt-4 border-t border-white/10 italic text-gray-400 text-center">Dibuat dgn <span class="text-red-500 animate-pulse">❤️</span>. Bug? <a href="mailto:deltaastra24@gmail.com?subject=Feedback%20SearchTube" class="text-primary-dynamic hover:underline">Umpan balik</a>!</p></div></div>`; };
+
+        // --- NEW: Render YouTube Playlist Details Page ---
+        const renderYouTubePlaylistDetailsPage = async (playlistId) => {
+            currentPlaylistId = playlistId; // Store current YT playlist ID
+            nextPageTokens.ytPlaylistItems = null; // Reset token for this playlist
+
+            // 1. Fetch Playlist Details (Title, Description etc.) - Optional but good for context
+            const playlistDetailsUrl = getApiUrl('playlists', { part: 'snippet', id: playlistId });
+            const playlistDetailsData = await fetchData(playlistDetailsUrl);
+            const playlistSnippet = playlistDetailsData?.items?.[0]?.snippet;
+
+            // 2. Fetch first batch of Playlist Items
+            const playlistItemsData = await fetchYouTubePlaylistItems(playlistId);
+
+             // 3. Render initial page structure
+             viewContainer.innerHTML = `
+                 <div class="mb-6">
+                     <div class="flex items-center gap-4 mb-2">
+                        <button onclick="history.back()" title="Kembali" class="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white flex-shrink-0">
+                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                        </button>
+                        <h1 class="text-xl md:text-2xl font-bold gradient-text truncate" title="${playlistSnippet?.title || playlistId}">
+                            ${playlistSnippet?.title || 'Playlist'}
+                        </h1>
+                     </div>
+                      ${playlistSnippet?.description ? `<p class="text-sm text-gray-400 line-clamp-3">${playlistSnippet.description}</p>` : ''}
+                 </div>
+                 <div id="yt-playlist-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    ${!playlistItemsData ? `<div class="col-span-full flex justify-center items-center h-64"><div class="loader"></div></div>` : ''}
+                 </div>
+             `;
+
+             // 4. Process and render the first batch of items (if fetched successfully)
+             if (playlistItemsData) {
+                await renderAndAppendPlaylistItems(playlistItemsData, 'yt-playlist-videos-grid', false); // Render initial batch
+             } else if (playlistItemsData === null) { // Explicit null means fetch error
+                 document.getElementById('yt-playlist-videos-grid').innerHTML = `<p class="col-span-full text-center text-red-500">Gagal memuat item playlist.</p>`;
+             }
+        };
+
+        // --- NEW: Fetch YouTube Playlist Items (Handles pagination token) ---
+        const fetchYouTubePlaylistItems = async (playlistId, pageToken = null) => {
+            const url = getApiUrl('playlistItems', {
+                part: 'snippet,contentDetails', // contentDetails has videoId
+                playlistId: playlistId,
+                maxResults: 25, // Adjust batch size as needed
+                pageToken: pageToken || ''
+            });
+            return await fetchData(url);
+        };
+
+         // --- NEW: Helper to render/append playlist items & fetch details ---
+         const renderAndAppendPlaylistItems = async (playlistItemsData, gridId, isAppending) => {
+            const grid = document.getElementById(gridId);
+            if (!grid || !playlistItemsData?.items?.length) {
+                if (!isAppending && grid) grid.innerHTML = '<p class="col-span-full text-center text-gray-400">Playlist ini kosong atau video tidak tersedia.</p>';
+                removeLoadMoreButton(gridId); // Ensure no button if empty/error
+                return; // Exit if grid or items are missing
+            }
+
+             // 1. Extract Video IDs
+             const videoIds = playlistItemsData.items
+                 .map(item => item.contentDetails?.videoId)
+                 .filter(id => id) // Filter out any potential null/undefined IDs
+                 .join(',');
+
+             // 2. Fetch Video Details (Duration, Views etc.)
+             const detailsMap = videoIds ? await fetchVideoDetailsByIds(videoIds) : new Map();
+
+             // 3. Render or Append Cards
+             playlistItemsData.items.forEach(item => {
+                 const videoId = item.contentDetails?.videoId;
+                 if (!videoId) return; // Skip if videoId is missing (e.g., deleted video)
+
+                 const videoDetails = detailsMap.get(videoId);
+                 const snippet = item.snippet || {};
+                 const combinedData = {
+                     id: videoId, // Use the actual video ID
+                     snippet: {
+                         title: snippet.title,
+                         channelTitle: snippet.videoOwnerChannelTitle || videoDetails?.snippet?.channelTitle || 'Unknown Channel', // Prefer playlist item owner, fallback to video details
+                         channelId: snippet.videoOwnerChannelId || videoDetails?.snippet?.channelId || null,
+                         thumbnails: snippet.thumbnails || videoDetails?.snippet?.thumbnails || {},
+                         publishedAt: videoDetails?.snippet?.publishedAt || snippet.publishedAt, // Prefer actual video publish date
+                         position: snippet.position // Keep playlist position if needed later
+                     },
+                     contentDetails: videoDetails?.contentDetails || {}, // Get duration from video details
+                     statistics: videoDetails?.statistics || {} // Get stats from video details
+                 };
+                 grid.appendChild(renderVideoCard(combinedData));
+             });
+
+             // 4. Handle Pagination Button
+             removeLoadMoreButton(gridId); // Remove old one first
+             nextPageTokens.ytPlaylistItems = playlistItemsData.nextPageToken || null;
+             if (nextPageTokens.ytPlaylistItems) {
+                 showLoadMoreButton(gridId, () => loadMoreYouTubePlaylistItems(currentPlaylistId, gridId));
+             }
+         };
+
+         // --- NEW: Load More YouTube Playlist Items ---
+         const loadMoreYouTubePlaylistItems = async (playlistId, gridId) => {
+             if (isLoading || !nextPageTokens.ytPlaylistItems) return;
+
+             const button = document.querySelector(`#${gridId} + .load-more-button`); // Find button adjacent to grid
+             if (button) {
+                 button.innerHTML = `<div class="loader !w-6 !h-6 !border-2 mx-auto"></div>`;
+                 button.disabled = true;
+             }
+
+             const playlistItemsData = await fetchYouTubePlaylistItems(playlistId, nextPageTokens.ytPlaylistItems);
+
+             if (playlistItemsData) {
+                 await renderAndAppendPlaylistItems(playlistItemsData, gridId, true); // Append new batch
+             } else {
+                 showError("Gagal memuat item playlist lainnya.");
+                 removeLoadMoreButton(gridId); // Remove button on error
+             }
+              // Re-enable button is handled by renderAndAppendPlaylistItems removing/adding it
+         };
+
+        // --- API Call Functions --- (No changes needed here, fetchData handles cache)
+        const fetchVideoDetailsByIds = async (videoIds) => { if (!videoIds) return new Map(); const url = getApiUrl('videos', { part: 'contentDetails,statistics,snippet', id: videoIds, maxResults: 50 }); const data = await fetchData(url); const map = new Map(); if (data?.items) data.items.forEach(v => map.set(v.id, v)); return map; };
+        const fetchChannelContent = async (channelId, type = 'videos', append = false) => { let url; const pageToken = append ? (type === 'videos' ? nextPageTokens.channelVideos : nextPageTokens.channelPlaylists) : null; if (type === 'videos') { url = getApiUrl('search', { part: 'snippet', channelId: channelId, order: 'date', type: 'video', maxResults: 16, pageToken: pageToken || '' }); } else { url = getApiUrl('playlists', { part: 'snippet,contentDetails', channelId: channelId, maxResults: 16, pageToken: pageToken || '' }); } const data = await fetchData(url); if (data) { if (type === 'videos') nextPageTokens.channelVideos = data.nextPageToken || null; else nextPageTokens.channelPlaylists = data.nextPageToken || null; } return data; };
+        const fetchComments = async (videoId, pageToken = null) => { const url = getApiUrl('commentThreads', { part: 'snippet,replies', videoId: videoId, order: 'relevance', maxResults: 20, pageToken: pageToken || '' }); return await fetchData(url); };
+        const fetchCommentReplies = async (commentId, pageToken = null) => { const url = getApiUrl('comments', { part: 'snippet', parentId: commentId, maxResults: 10, pageToken: pageToken || '' }); return await fetchData(url); };
+
+        // --- UI Interaction & Logic --- (Mostly same, ensure fetchData is used)
+        const toggleMobileSidebar = () => { const isOpen = !sidebar.classList.contains('-translate-x-full'); if (isOpen) { sidebar.classList.add('sidebar-slide-out'); sidebar.classList.remove('sidebar-slide-in'); sidebarBackdrop.classList.add('hidden'); setTimeout(() => { sidebar.classList.add('-translate-x-full'); sidebar.classList.remove('sidebar-slide-out'); }, 300); } else { sidebar.classList.remove('-translate-x-full', 'sidebar-slide-out'); sidebar.classList.add('sidebar-slide-in'); sidebarBackdrop.classList.remove('hidden'); } };
+        const handleSearch = (event) => { event.preventDefault(); const query = searchInputDesktop.value.trim() || searchInputMobile.value.trim(); if (query) { navigateTo(`search/${encodeURIComponent(query)}`); searchInputDesktop.value = ''; searchInputMobile.value = ''; if (window.innerWidth < 768) toggleMobileSidebar(); } };
+        const setupInfiniteScrollObserver = () => { const obsOptions = { root: null, rootMargin: '0px', threshold: 0.5 }; const cb = (entries) => { entries.forEach(entry => { if (entry.isIntersecting && !isLoading && nextPageTokens.search && currentView === 'search') { renderSearchResults(currentSearchQuery, true); } }); }; const obs = new IntersectionObserver(cb, obsOptions); if (infiniteScrollSentinel) obs.observe(infiniteScrollSentinel); };
+        const loadMoreChannelContent = async (type = 'videos') => { if (isLoading) return; const data = await fetchChannelContent(currentChannelId, type, true); const gridId = type === 'videos' ? 'channel-videos-grid' : 'channel-playlists-grid'; const grid = document.getElementById(gridId); if (!grid) return; removeLoadMoreButton(gridId); if (!data?.items?.length) return; if (type === 'videos') { const vIds = data.items.map(i => i.id.videoId).join(','); const dMap = await fetchVideoDetailsByIds(vIds); data.items.forEach(item => { const simpleV = { id: item.id.videoId, snippet: item.snippet }; const cardEl = renderVideoCard(simpleV); const d = dMap.get(item.id.videoId); if (d) { const durS = cardEl.querySelector('.aspect-video span'); if (durS && d.contentDetails?.duration) { durS.textContent = formatDuration(d.contentDetails.duration); durS.classList.remove('hidden'); } else if(durS) { durS.classList.add('hidden'); } const statS = cardEl.querySelector('.view-count'); const sepS = cardEl.querySelector('.view-separator'); if (statS && d.statistics?.viewCount) { statS.textContent = `${formatViews(d.statistics.viewCount)} x ditonton`; sepS?.classList.remove('hidden'); } else { statS.textContent = ''; sepS?.classList.add('hidden');} } else { const durS = cardEl.querySelector('.aspect-video span'); if (durS) durS.classList.add('hidden'); const statS = cardEl.querySelector('.view-count'); if(statS) statS.textContent = ''; const sepS = cardEl.querySelector('.view-separator'); if(sepS) sepS.classList.add('hidden'); } cardEl.dataset.publishedAt = item.snippet.publishedAt; grid.appendChild(cardEl); }); } else { data.items.forEach(p => grid.insertAdjacentHTML('beforeend', renderChannelPlaylistCard(p))); } if ((type === 'videos' && nextPageTokens.channelVideos) || (type === 'playlists' && nextPageTokens.channelPlaylists)) { showLoadMoreButton(gridId, () => loadMoreChannelContent(type)); } };
+        const switchChannelTab = async (tab) => { const area=document.getElementById('channel-content-area'); const vTab=document.getElementById('tab-videos'); const pTab=document.getElementById('tab-playlists'); vTab.classList.toggle('border-primary-dynamic',tab==='videos'); vTab.classList.toggle('text-primary-dynamic',tab==='videos'); vTab.classList.toggle('border-transparent',tab!=='videos'); vTab.classList.toggle('text-gray-400',tab!=='videos'); pTab.classList.toggle('border-primary-dynamic',tab==='playlists'); pTab.classList.toggle('text-primary-dynamic',tab==='playlists'); pTab.classList.toggle('border-transparent',tab!=='playlists'); pTab.classList.toggle('text-gray-400',tab!=='playlists'); area.innerHTML=`<div class="flex justify-center items-center py-10"><div class="loader"></div></div>`; if(tab==='videos'){nextPageTokens.channelVideos=null; const data=await fetchChannelContent(currentChannelId,'videos'); area.innerHTML=renderChannelVideos(data); if(nextPageTokens.channelVideos)showLoadMoreButton('channel-videos-grid',()=>loadMoreChannelContent('videos'));} else if(tab==='playlists'){nextPageTokens.channelPlaylists=null; const data=await fetchChannelContent(currentChannelId,'playlists'); area.innerHTML=renderChannelPlaylists(data); area.querySelectorAll('a[data-playlist-id]').forEach(l=>{l.addEventListener('click',(e)=>{e.preventDefault();navigateTo(`playlist/yt/${l.dataset.playlistId}`)})}); if(nextPageTokens.channelPlaylists)showLoadMoreButton('channel-playlists-grid',()=>loadMoreChannelContent('playlists'));}};
+        const toggleDescription = () => { const d=document.getElementById('video-description'); const b=document.getElementById('show-more-desc'); if(!d||!b)return; if(d.classList.contains('max-h-24')){d.classList.remove('max-h-24'); d.classList.add('max-h-[500px]'); b.textContent='Lebih Sedikit';} else {d.classList.add('max-h-24'); d.classList.remove('max-h-[500px]'); b.textContent='Lebih Banyak';}};
+        const loadMoreComments = async (videoId) => { if(isLoading||!nextPageTokens.comments)return; const btn=document.getElementById('load-more-comments'); if(!btn)return; const txt=btn.textContent; btn.innerHTML=`<div class="loader !w-5 !h-5 !border-2 mx-auto"></div>`; btn.disabled=true; const data=await fetchComments(videoId,nextPageTokens.comments); const cont=document.getElementById('comments-container'); if(data?.items){data.items.forEach(c=>cont.insertAdjacentHTML('beforeend',renderComment(c))); nextPageTokens.comments=data.nextPageToken||null; if(!nextPageTokens.comments)btn.remove(); else {btn.innerHTML=txt; btn.disabled=false;}} else {showError("Gagal muat komen."); btn.innerHTML=txt; btn.disabled=false;}};
+        const toggleReplies = async (cId, btn, count) => { const cont=document.getElementById(`replies-${cId}`); if(!cont)return; const isOpen=!cont.classList.contains('hidden'); if(isOpen){cont.classList.add('hidden'); cont.innerHTML=`<div class="flex items-center justify-center p-2"><div class="loader !w-5 !h-5 !border-2"></div></div>`; btn.innerHTML=`<span class="inline-flex items-center"><svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>Lihat ${count} balasan</span>`; delete nextPageTokens.replies[cId];} else {cont.classList.remove('hidden'); btn.innerHTML=`<span class="inline-flex items-center"><svg class="w-4 h-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0 0 11.667 0l3.181-3.183m-4.991 0l-3.182-3.182a8.25 8.25 0 0 0-11.667 0L2.985 14.652z"/></svg>Memuat...</span>`; await loadReplies(cId,btn,count);}};
+        const loadReplies = async (cId, btn, count, append=false) => { if(!append&&isLoading)return; if(append&&(isLoading||!nextPageTokens.replies[cId]))return; isLoading=true; const token=append?nextPageTokens.replies[cId]:null; const cont=document.getElementById(`replies-${cId}`); const loadMoreId=`load-more-replies-${cId}`; const loadMoreBtn=document.getElementById(loadMoreId); if(append&&loadMoreBtn){loadMoreBtn.innerHTML=`<div class="loader !w-4 !h-4 !border-2 mx-auto"></div>`; loadMoreBtn.disabled=true;} const data=await fetchCommentReplies(cId,token); if(!cont){isLoading=false; return;} if(data?.items){if(!append)cont.innerHTML=''; data.items.reverse().forEach(r=>cont.insertAdjacentHTML('beforeend',renderComment(r,true))); nextPageTokens.replies[cId]=data.nextPageToken||null; const existingBtn=document.getElementById(loadMoreId); if(existingBtn)existingBtn.remove(); if(nextPageTokens.replies[cId]){const newBtn=document.createElement('button'); newBtn.id=loadMoreId; newBtn.className='text-xs text-primary-dynamic font-semibold hover:text-blue-400 w-full text-left py-1 pl-2 rounded hover:bg-primary-dynamic/10 mt-1'; newBtn.textContent='Muat balasan lain'; newBtn.onclick=()=>loadReplies(cId,btn,count,true); cont.appendChild(newBtn);} if(!append){btn.innerHTML=`<span class="inline-flex items-center"><svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>Sembunyikan</span>`;}} else {if(!append){cont.innerHTML='<p class="text-xs text-gray-500 py-1">Gagal muat.</p>'; btn.innerHTML=`<span class="inline-flex items-center"><svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>Lihat ${count} balasan (Error)</span>`;} else {if(loadMoreBtn)loadMoreBtn.textContent='Gagal'; showError("Gagal muat balasan lain.");}} isLoading=false; };
+
+        // --- Playlist Management --- (Same as before)
+        const savePlaylists = () => localStorage.setItem('userPlaylists', JSON.stringify(userPlaylists)); const createPlaylist = (name) => { const tName=name.trim(); if(!tName){showError("Nama kosong."); return false;} if(userPlaylists[tName]){showError(`Playlist "${tName}" ada.`); return false;} userPlaylists[tName]=[]; savePlaylists(); showToast(`Playlist "${tName}" dibuat.`); return true; }; const deletePlaylist = (name) => { if(userPlaylists[name]){delete userPlaylists[name]; savePlaylists(); showToast(`Playlist "${name}" dihapus.`); const hash=window.location.hash; if(hash===`#playlist/${encodeURIComponent(name)}`){navigateTo('playlists');} else if(currentView==='playlists'){renderPlaylistListPage();}} else {showError("Playlist tdk ditemukan.");}}; const confirmDeletePlaylist = (name) => showConfirmationModal('Hapus Playlist', `Yakin hapus "${name}"?`, () => deletePlaylist(name)); const addVideoToPlaylist = (pName, vData) => { if(!userPlaylists[pName]){showError(`Playlist "${pName}" tdk ada.`); return;} if(userPlaylists[pName].some(v=>v.id===vData.id)){showToast(`Video sudah di "${pName}".`); return;} const vToAdd={id:vData.id, title:vData.title||'No Title', channel:vData.channel||'No Channel', channelId:vData.channelId||null, thumbnail:vData.thumbnail||PLACEHOLDER_IMAGE, duration:vData.duration||null, addedAt:Date.now()}; userPlaylists[pName].unshift(vToAdd); savePlaylists(); showToast(`Video ditambah ke "${pName}".`); }; const handleRemoveFromPlaylist = (pName, vIdx) => { if(!userPlaylists[pName]||vIdx<0||vIdx>=userPlaylists[pName].length){showError("Gagal hapus video."); return;} const removed=userPlaylists[pName].splice(vIdx,1)[0]; savePlaylists(); showToast(`"${removed.title}" dihapus dari "${pName}".`); const hash=window.location.hash; if(hash===`#playlist/${encodeURIComponent(pName)}`){renderPlaylistDetailsPage(pName);}}; const openCreatePlaylistModal = () => { const content=`<label for="new-playlist-name" class="block text-sm font-medium text-gray-300 mb-2">Nama Playlist:</label><input type="text" id="new-playlist-name" required class="w-full bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 placeholder-gray-400">`; showModal('Buat Playlist Baru',content,[{text:'Batal',classes:'px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500'},{text:'Buat',classes:'px-4 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90',onClick:()=>{const input=document.getElementById('new-playlist-name'); if(createPlaylist(input.value)&&currentView==='playlists'){renderPlaylistListPage();}}}]); document.getElementById('new-playlist-name')?.focus(); }; const openAddToPlaylistModal = () => { if(!currentVideoDataForPlaylist){showError("Data video tdk ada."); return;} const names=Object.keys(userPlaylists); let optsHTML=names.length>0?names.map(n=>{const esc=n.replace(/'/g,"\\'").replace(/"/g,"&quot;"); const added=userPlaylists[n].some(v=>v.id===currentVideoDataForPlaylist.id); return `<button onclick="addVideoToPlaylist('${esc}',currentVideoDataForPlaylist); hideModal();" ${added?'disabled':''} class="w-full text-left px-4 py-2 rounded-md flex justify-between items-center ${added?'bg-green-500/20 text-green-400 cursor-not-allowed':'hover:bg-primary-dynamic/20 text-gray-200'}"><span>${n}</span> ${added?'<svg class="w-4 h-4 text-green-400 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>':''}</button>`;}).join(''):'<p class="text-sm text-gray-400 text-center">Belum ada playlist.</p>'; const content=`<p class="text-sm text-gray-400 mb-3">Simpan ke:</p><div class="space-y-2 max-h-48 overflow-y-auto mb-4 pr-1">${optsHTML}</div><hr class="border-white/10 my-4"><label for="create-and-add-playlist-name" class="block text-sm font-medium text-gray-300 mb-2">Atau buat baru:</label><div class="flex gap-2"><input type="text" id="create-and-add-playlist-name" placeholder="Nama playlist..." class="flex-grow bg-black/30 border border-white/20 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-primary-dynamic text-gray-200 placeholder-gray-400"><button id="create-and-add-btn" class="px-4 py-2 bg-gradient-dynamic text-white rounded-md hover:opacity-90 text-sm shrink-0">Buat & Tambah</button></div>`; showModal('Simpan ke Playlist',content,[{text:'Tutup',classes:'px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500'}]); document.getElementById('create-and-add-btn')?.addEventListener('click',()=>{const input=document.getElementById('create-and-add-playlist-name'); const newName=input.value.trim(); if(newName){if(createPlaylist(newName)){addVideoToPlaylist(newName,currentVideoDataForPlaylist); hideModal();}}else{showError("Nama kosong.");}}); };
+
+        // --- Last Watched --- (Same as before)
+        const saveLastWatched = () => { if (lastWatched.length > MAX_LAST_WATCHED) lastWatched = lastWatched.slice(0, MAX_LAST_WATCHED); localStorage.setItem('lastWatched', JSON.stringify(lastWatched)); }; const updateLastWatched = (vData, secs) => { if (!vData?.id || !vData.snippet || !vData.contentDetails) return; const rSecs = Math.round(secs); if (isNaN(rSecs) || rSecs < 0) return; const idx = lastWatched.findIndex(v => v.id === vData.id); const entry = { id: vData.id, title: vData.snippet.title, channel: vData.snippet.channelTitle, channelId: vData.snippet.channelId, thumbnail: vData.snippet.thumbnails?.medium?.url || vData.snippet.thumbnails?.default?.url || PLACEHOLDER_IMAGE, duration: vData.contentDetails.duration, watchedSeconds: rSecs, lastWatchedTimestamp: Date.now() }; if (!entry.id || !entry.title || !entry.duration) return; if (idx > -1) lastWatched.splice(idx, 1); lastWatched.unshift(entry); saveLastWatched(); }; const startLastWatchedUpdate = (vData) => { if (!ytPlayer?.getCurrentTime || !vData) return; stopLastWatchedUpdate(); updateLastWatched(vData, ytPlayer.getCurrentTime()); lastWatchedUpdateInterval = setInterval(() => { if (ytPlayer?.getPlayerState && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) { updateLastWatched(vData, ytPlayer.getCurrentTime()); } }, 15000); }; const stopLastWatchedUpdate = () => { if (lastWatchedUpdateInterval) { clearInterval(lastWatchedUpdateInterval); lastWatchedUpdateInterval = null; } if (ytPlayer && currentVideoId && typeof ytPlayer.getCurrentTime === 'function') { const time = ytPlayer.getCurrentTime(); const data = lastWatched.find(v => v.id === currentVideoId); if (data) { const uData = { id: data.id, snippet: { title: data.title, channelTitle: data.channel, channelId: data.channelId, thumbnails: { medium: { url: data.thumbnail } } }, contentDetails: { duration: data.duration } }; updateLastWatched(uData, time); } } }; const parseISODuration = (iso) => { if (!iso || iso === 'P0D' || iso === 'P0S') return 0; const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/); if(!m) return 0; return (parseInt(m[1]||0)*3600 + parseInt(m[2]||0)*60 + parseInt(m[3]||0)); }; const formatSeconds = (secs) => { secs = Math.round(secs); const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60; if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; return `${m}:${String(s).padStart(2,'0')}`; };
+
+        // --- YouTube Player API --- (Same as before)
+        function onYouTubeIframeAPIReady() { console.log("YT API Ready"); } function initializePlayer(videoId, startTime = 0) { if (ytPlayer?.destroy) { try { ytPlayer.destroy(); } catch(e){} ytPlayer = null; } setTimeout(() => { const cont = document.getElementById('youtube-player'); if(!cont) return; try { ytPlayer = new YT.Player('youtube-player', { height: '100%', width: '100%', videoId: videoId, playerVars: { 'playsinline': 1, 'autoplay': 1, 'modestbranding': 1, 'rel': 0, 'start': Math.round(startTime) }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': onPlayerError } }); } catch (err) { console.error("Player init error:", err); showError("Gagal muat player."); cont.innerHTML = `<p class="text-red-500 text-center p-4">Gagal muat player.</p>`; } }, 150); } function onPlayerReady(event) { console.log("Player Ready:", event.target.getVideoData().title); const videoId = event.target.getVideoData().video_id; const url = getApiUrl('videos', { part: 'snippet,contentDetails,statistics', id: videoId }); fetchData(url).then(data => { if (data?.items?.length) startLastWatchedUpdate(data.items[0]); }); } function onPlayerStateChange(event) { const data = lastWatched.find(v => v.id === currentVideoId); if (event.data === YT.PlayerState.PLAYING) { if (data) { const uData = { id: data.id, snippet: { title: data.title, channelTitle: data.channel, channelId: data.channelId, thumbnails: { medium: { url: data.thumbnail } } }, contentDetails: { duration: data.duration } }; startLastWatchedUpdate(uData); } } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) { stopLastWatchedUpdate(); } } function onPlayerError(event) { console.error("Player Error:", event.data); let msg = `Error player (Kode: ${event.data}).`; if (event.data === 101 || event.data === 150) msg += " Embedding nonaktif."; else if (event.data === 100) msg += " Video tidak ada."; showError(msg); const div = document.getElementById('youtube-player'); if (div) div.innerHTML = `<div class="w-full h-full flex items-center justify-center p-4 bg-black/50"><p class="text-red-400 text-center">${msg}</p></div>`; }
+
+        // --- Settings Logic --- (Same as before)
+        const applyTheme = (themeKey) => { const theme = themes[themeKey] || themes.default; const root = document.documentElement; root.style.setProperty('--primary-color', theme.primary); root.style.setProperty('--secondary-color', theme.secondary); root.style.setProperty('--gradient-start', theme.gradientStart); root.style.setProperty('--gradient-end', theme.gradientEnd); settings.theme = themeKey; localStorage.setItem('settings', JSON.stringify(settings)); }; const handleThemeChange = (event) => applyTheme(event.target.value); const updateSleepTimerDisplay = () => { if (settings.sleepTimerEnd) { const rem = settings.sleepTimerEnd - Date.now(); if (rem <= 0) { sleepTimerDisplay.classList.add('hidden'); handleCancelSleepTimer(true); showToast("Waktunya Tidur!", "warning"); if (ytPlayer?.pauseVideo) ytPlayer.pauseVideo(); } else { const m = Math.floor(rem / 60000); const s = Math.floor((rem % 60000) / 1000); sleepTimerCountdown.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; sleepTimerDisplay.classList.remove('hidden'); } } else { sleepTimerDisplay.classList.add('hidden'); } }; const startSleepTimerInterval = () => { if (sleepTimerInterval) clearInterval(sleepTimerInterval); if (settings.sleepTimerEnd) { updateSleepTimerDisplay(); sleepTimerInterval = setInterval(updateSleepTimerDisplay, 1000); } }; const handleSetSleepTimer = () => { const input = document.getElementById('sleep-timer-minutes'); const mins = parseInt(input.value); if (isNaN(mins) || mins <= 0) { showError("Menit tdk valid."); return; } settings.sleepTimerEnd = Date.now() + mins * 60000; localStorage.setItem('settings', JSON.stringify(settings)); startSleepTimerInterval(); updateSleepTimerStatus(); input.value = ''; showToast(`Timer tidur ${mins} menit.`); document.getElementById('cancel-sleep-timer')?.classList.remove('hidden'); }; const handleCancelSleepTimer = (silent = false) => { if (sleepTimerInterval) { clearInterval(sleepTimerInterval); sleepTimerInterval = null; } settings.sleepTimerEnd = null; localStorage.setItem('settings', JSON.stringify(settings)); sleepTimerDisplay.classList.add('hidden'); updateSleepTimerStatus(); if (!silent) showToast("Timer tidur dibatalkan."); document.getElementById('cancel-sleep-timer')?.classList.add('hidden'); }; const updateSleepTimerStatus = () => { const el = document.getElementById('timer-status'); if (!el) return; if (settings.sleepTimerEnd) { const end = new Date(settings.sleepTimerEnd); el.textContent = `Timer aktif, berakhir ${end.toLocaleTimeString('id-ID')}.`; el.className = 'text-sm text-green-400 mt-3'; document.getElementById('cancel-sleep-timer')?.classList.remove('hidden'); } else { el.textContent = 'Timer tdk aktif.'; el.className = 'text-sm text-gray-400 mt-3'; document.getElementById('cancel-sleep-timer')?.classList.add('hidden'); } }; const handleSaveApiKey = () => { const input = document.getElementById('custom-api-key'); const key = input.value.trim(); settings.customApiKey = key; localStorage.setItem('youtubeApiKey', key); localStorage.setItem('settings', JSON.stringify(settings)); API_KEY = key || "YOUR_YOUTUBE_API_KEY"; showToast("Kunci API disimpan."); }; const handleResetApiKey = () => { const input = document.getElementById('custom-api-key'); settings.customApiKey = ''; localStorage.removeItem('youtubeApiKey'); localStorage.setItem('settings', JSON.stringify(settings)); API_KEY = "YOUR_YOUTUBE_API_KEY"; if (input) input.value = ''; showToast("Kunci API direset."); }; const handleCacheTTLChange = (event) => { const newTTL = parseInt(event.target.value); if (!isNaN(newTTL)) { settings.cacheTTL = newTTL; localStorage.setItem('settings', JSON.stringify(settings)); showToast(`Durasi cache diubah ke ${event.target.options[event.target.selectedIndex].text}.`); } }; const confirmClearPlaylists = () => showConfirmationModal('Hapus Playlist', 'Yakin hapus SEMUA playlist?', handleClearPlaylists); const confirmClearLastWatched = () => showConfirmationModal('Hapus Riwayat', 'Yakin hapus riwayat?', handleClearLastWatched); const confirmClearAllData = () => showConfirmationModal('Hapus Semua Data', 'PERINGATAN: Yakin hapus SEMUA data aplikasi?', handleClearAllData); const handleClearPlaylists = () => { userPlaylists = {}; savePlaylists(); showToast("Playlist dihapus."); if (currentView === 'playlists' || currentView === 'playlist') navigateTo('playlists'); }; const handleClearLastWatched = () => { lastWatched = []; saveLastWatched(); showToast("Riwayat dihapus."); if (currentView === 'lastwatched') renderLastWatchedPage(); }; const handleClearAllData = () => { localStorage.clear(); userPlaylists = { "Favorit": [] }; lastWatched = []; settings = { theme: 'default', sleepTimerEnd: null, customApiKey: '', cacheTTL: 900000 }; API_KEY = "YOUR_YOUTUBE_API_KEY"; trendingRegion = 'ID'; handleCancelSleepTimer(true); applyTheme('default'); clearApiCache(true); showToast("Semua data dihapus.", "warning"); renderSettingsPage(); navigateTo('home'); };
+
+
+        // --- Navigation --- (Modified Router)
+        const navigateTo = (hash, options = {}) => {
+            console.log(`Navigating to: #${hash}`, options);
+            stopLastWatchedUpdate();
+            if (currentView === 'watch' && ytPlayer?.destroy) { try { ytPlayer.destroy(); } catch(e){} ytPlayer = null; currentVideoId = null; currentVideoDataForPlaylist = null; }
+            // Reset playlist ID only when leaving a playlist view
+            if (currentView === 'playlist') { currentPlaylistId = null; }
+            isLoading = false;
+            viewContainer.innerHTML = `<div class="flex justify-center items-center h-64"><div class="loader"></div></div>`;
+            history.pushState(options, '', `#${hash}`);
+            router(); // Call router directly
+            sidebarLinks.forEach(link => { const linkView = link.dataset.view; const targetView = hash.startsWith('playlist/') ? 'playlists' : hash.split('/')[0]; link.classList.toggle('sidebar-link-active', linkView === targetView); link.classList.toggle('gradient-text', linkView === targetView); });
+            if (window.innerWidth < 768 && !sidebar.classList.contains('-translate-x-full')) toggleMobileSidebar();
+        };
+
+        const router = () => {
+             const hash = window.location.hash || '#home';
+             const pathSegments = hash.substring(1).split('/');
+             const view = pathSegments[0] || 'home';
+             const param1 = pathSegments[1] ? decodeURIComponent(pathSegments[1]) : null;
+             const param2 = pathSegments[2] ? decodeURIComponent(pathSegments[2]) : null;
+             const isYouTubePlaylist = view === 'playlist' && param1 === 'yt'; // Check for YT playlist prefix
+
+             console.log(`Route: ${view}, P1: ${param1}, P2: ${param2}, IsYTPl: ${isYouTubePlaylist}`);
+
+             // Reset tokens/state based on view *change* if necessary (more granular)
+             if (currentView !== 'search' && view === 'search') {
+                 nextPageTokens.search = null;
+             } else if (currentView !== 'playlist' && view === 'playlist' && isYouTubePlaylist) {
+                  nextPageTokens.ytPlaylistItems = null;
+             }
+             // ... other resets as needed ...
+
+             currentView = view; // Update current view state *after* potential resets
+
+             switch (view) {
+                 case 'home': renderHome(); break;
+                 case 'trending': renderTrending(); break;
+                 case 'search': if (param1) renderSearchResults(param1); else renderHome(); break;
+                 case 'watch': if (param1) renderWatchPage(param1); else renderHome(); break;
+                 case 'channel': if (param1) renderChannelPage(param1); else renderHome(); break;
+                 case 'playlists': renderPlaylistListPage(); break; // User's playlists list
+                 case 'playlist': // Viewing a specific playlist
+                     if (isYouTubePlaylist && param2) {
+                         renderYouTubePlaylistDetailsPage(param2); // Render YT Playlist (param2=ID)
+                     } else if (param1 && !isYouTubePlaylist) {
+                         renderPlaylistDetailsPage(param1); // Render User Playlist (param1=Name)
+                     } else {
+                         navigateTo('playlists'); // Fallback to user playlist list
+                     }
+                     break;
+                 case 'lastwatched': renderLastWatchedPage(); break;
+                 case 'settings': renderSettingsPage(); break;
+                 case 'about': renderAboutPage(); break;
+                 default: renderHome();
+             }
+             window.scrollTo(0, 0);
+         };
+
+
+        // --- Initialization --- (Same as before)
+        const initializeApp = () => {
+             searchFormDesktop.addEventListener('submit', handleSearch); searchFormMobile.addEventListener('submit', handleSearch);
+             mobileMenuButton.addEventListener('click', toggleMobileSidebar); sidebarBackdrop.addEventListener('click', toggleMobileSidebar);
+             logoLink.addEventListener('click', (e) => { e.preventDefault(); navigateTo('home'); });
+             sidebarLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); navigateTo(link.getAttribute('href').substring(1)); }); });
+             window.addEventListener('popstate', router); window.addEventListener('beforeunload', stopLastWatchedUpdate);
+             settings.cacheTTL = parseInt(settings.cacheTTL || 900000);
+             applyTheme(settings.theme); startSleepTimerInterval();
+             router();
+        };
+
+        // --- Run ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // ...existing code...
+// Plugin: Pindah tombol submit search ke bawah kolom searchbar di sidebar mobile + label & svg tombol, tampilan rapi
+(function() {
+    function moveMobileSearchButton() {
+        const form = document.getElementById('search-form-mobile');
+        if (!form) return;
+        const input = document.getElementById('search-input-mobile');
+        const button = form.querySelector('button[type="submit"]');
+        if (!input || !button) return;
+
+        // Cek jika sudah dipindah, hindari duplikasi
+        if (button.parentElement !== form) return;
+
+        // Buat wrapper baru untuk tombol
+        let btnWrapper = form.querySelector('.mobile-search-btn-wrapper');
+        if (!btnWrapper) {
+            btnWrapper = document.createElement('div');
+            btnWrapper.className = 'mobile-search-btn-wrapper w-full mt-2 flex';
+            // Tambahkan styling agar full width dan responsif
+            button.classList.add('w-full', 'justify-center', 'items-center', 'flex', 'gap-2');
+            input.after(btnWrapper);
+        }
+
+        // Bersihkan isi button
+        button.innerHTML = '';
+
+        // Tambahkan SVG search
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'h-5 w-5');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />';
+        button.appendChild(svg);
+
+        // Tambahkan label "Cari"
+        const label = document.createElement('span');
+        label.className = 'mobile-search-label';
+        label.textContent = 'Cari';
+        button.appendChild(label);
+
+        btnWrapper.appendChild(button);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        moveMobileSearchButton();
+        window.addEventListener('resize', moveMobileSearchButton);
+    });
+})();
+// ...existing code...
+
+// ...existing code...
+// Plugin: Tampilkan text logo di navbar mobile seperti desktop
+(function() {
+    function addMobileLogoText() {
+        const logoLink = document.getElementById('logo-link');
+        if (!logoLink) return;
+
+        // Cek jika sudah ada, hindari duplikasi
+        if (logoLink.querySelector('.mobile-logo-text')) return;
+
+        // Buat elemen span untuk logo text
+        const span = document.createElement('span');
+        span.className = 'mobile-logo-text text-xl font-bold gradient-text ml-2 sm:hidden';
+        span.textContent = 'SearchTube';
+
+        // Sisipkan setelah SVG logo
+        const svg = logoLink.querySelector('svg');
+        if (svg) {
+            svg.after(span);
+        } else {
+            logoLink.appendChild(span);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', addMobileLogoText);
+})();
+
+// ...existing code...
+// Plugin: Update API Key tanpa refresh, langsung reload data
+(function() {
+    // Patch tombol simpan/reset API Key agar reload data tanpa reload halaman
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveBtn = document.getElementById('save-api-key');
+        const resetBtn = document.getElementById('reset-api-key');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function() {
+                // Tunggu toast selesai, lalu reload data jika di halaman search/trending/home
+                setTimeout(() => {
+                    if (['search', 'trending', 'home'].includes(currentView)) {
+                        router();
+                    }
+                }, 400); // Toast animasi 400ms
+            });
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (['search', 'trending', 'home'].includes(currentView)) {
+                        router();
+                    }
+                }, 400);
+            });
+        }
+    });
+})();
+// ...existing code...
+
+// ...existing code...
+// Plugin: Tambahkan info/cara mendapatkan API Key di bagian setelan
+(function() {
+    function addApiKeyHelp() {
+        // Tunggu sampai halaman settings dirender
+        document.addEventListener('click', function(e) {
+            // Deteksi jika user membuka halaman settings
+            if (e.target.closest('a[href="#settings"], [data-view="settings"], #settings')) {
+                setTimeout(insertHelp, 300);
+            }
+        });
+        // Juga jalankan saat pertama kali render settings
+        if (window.location.hash === '#settings') {
+            setTimeout(insertHelp, 500);
+        }
+
+        function insertHelp() {
+            const apiKeyInput = document.getElementById('custom-api-key');
+            if (!apiKeyInput) return;
+            // Cek jika sudah ada, jangan duplikat
+            if (document.getElementById('api-key-help-link')) return;
+
+            const help = document.createElement('div');
+            help.id = 'api-key-help-link';
+            help.className = 'mt-2 text-xs text-gray-400';
+            help.innerHTML = `
+                <span>Belum punya API Key? </span>
+                <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-primary-dynamic underline hover:text-blue-400">Dapatkan di Google Cloud Console</a>
+                <span class="block mt-1">Panduan: <a href="https://developers.google.com/youtube/registering_an_application" target="_blank" rel="noopener" class="underline hover:text-blue-400">Cara Mendapatkan API Key YouTube</a></span>
+            `;
+            apiKeyInput.parentElement.appendChild(help);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', addApiKeyHelp);
+})();
+// ...existing code...
+
+// Plugin: Tambahkan label pada tombol simpan & reset API Key di setelan (SVG dan text selalu rata tengah)
+(function() {
+    function addApiKeyButtonLabels() {
+        const saveBtn = document.getElementById('save-api-key');
+        const resetBtn = document.getElementById('reset-api-key');
+        [saveBtn, resetBtn].forEach((btn, idx) => {
+            if (btn) {
+                // Pastikan button flex, center, dan gap
+                btn.classList.add('flex', 'items-center', 'justify-center', 'gap-2');
+                // Hapus label lama jika ada (hindari duplikat)
+                btn.querySelectorAll('.api-key-btn-label').forEach(e => e.remove());
+                // Tambahkan label setelah SVG
+                const label = document.createElement('span');
+                label.className = 'api-key-btn-label';
+                label.textContent = idx === 0 ? 'Simpan' : 'Reset';
+                // Sisipkan setelah SVG (jika ada)
+                const svg = btn.querySelector('svg');
+                if (svg && svg.nextSibling) {
+                    btn.insertBefore(label, svg.nextSibling);
+                } else {
+                    btn.appendChild(label);
+                }
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', addApiKeyButtonLabels);
+    // Juga jalankan setiap kali halaman setelan dirender ulang
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('a[href="#settings"], [data-view="settings"], #settings')) {
+            setTimeout(addApiKeyButtonLabels, 300);
+        }
+    });
+    if (window.location.hash === '#settings') {
+        setTimeout(addApiKeyButtonLabels, 500);
+    }
+})();
+// ...existing code...
+
+// Plugin: Cegah dan animasikan loader (loading indicator) agar tidak dobel
+(function() {
+    // Cegah loader dobel di main-content
+    const origShowLoadingIndicator = window.showLoadingIndicator;
+    const origHideLoadingIndicator = window.hideLoadingIndicator;
+
+    window.showLoadingIndicator = function() {
+        // Hapus semua loader kecuali satu di mainContent
+        const loaders = mainContent.querySelectorAll('.main-loader');
+        if (loaders.length > 1) {
+            loaders.forEach((l, i) => { if (i > 0) l.remove(); });
+        }
+        // Jika sudah ada loader, animasikan ulang (pulse)
+        let loader = mainContent.querySelector('.main-loader');
+        if (loader) {
+            loader.classList.remove('animate-pulse');
+            // Trigger reflow for animation restart
+            void loader.offsetWidth;
+            loader.classList.add('animate-pulse');
+        } else {
+            // Panggil asli jika belum ada
+            origShowLoadingIndicator ? origShowLoadingIndicator() : null;
+            loader = mainContent.querySelector('.main-loader');
+            if (loader) loader.classList.add('animate-pulse');
+        }
+    };
+
+    window.hideLoadingIndicator = function() {
+        // Hilangkan semua loader di mainContent
+        mainContent.querySelectorAll('.main-loader').forEach(l => l.remove());
+        if (origHideLoadingIndicator) origHideLoadingIndicator();
+    };
+
+    // CSS animasi pulse jika belum ada
+    if (!document.getElementById('main-loader-animate-css')) {
+        const style = document.createElement('style');
+        style.id = 'main-loader-animate-css';
+        style.innerHTML = `
+        .animate-pulse {
+            animation: main-loader-pulse 1.2s cubic-bezier(.4,0,.6,1) infinite;
+        }
+        @keyframes main-loader-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+
+// Plugin: Pindah tombol submit search di sidebar ke bawah input pada tablet (≤1024px) seperti mobile
+(function() {
+    function moveSidebarSearchButtonTablet() {
+        const form = document.getElementById('search-form-mobile');
+        if (!form) return;
+        const input = document.getElementById('search-input-mobile');
+        const button = form.querySelector('button[type="submit"]');
+        if (!input || !button) return;
+
+        // Deteksi wrapper, hindari duplikasi
+        let btnWrapper = form.querySelector('.mobile-search-btn-wrapper');
+        // Tablet: ≤1024px (Tailwind md: 768px, lg: 1024px)
+        if (window.innerWidth <= 1024) {
+            // Jika belum dipindah, pindahkan
+            if (!btnWrapper) {
+                btnWrapper = document.createElement('div');
+                btnWrapper.className = 'mobile-search-btn-wrapper w-full mt-2 flex';
+                button.classList.add('w-full', 'justify-center', 'items-center', 'flex', 'gap-2');
+                input.after(btnWrapper);
+                btnWrapper.appendChild(button);
+            } else if (button.parentElement !== btnWrapper) {
+                btnWrapper.appendChild(button);
+            }
+        } else {
+            // Di desktop, kembalikan button ke posisi semula jika perlu
+            if (btnWrapper && button.parentElement === btnWrapper) {
+                form.appendChild(button);
+                btnWrapper.remove();
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        moveSidebarSearchButtonTablet();
+        window.addEventListener('resize', moveSidebarSearchButtonTablet);
+    });
+})();// Plugin: Pastikan seluruh kolom di halaman Tentang tidak terpotong navbar di mobile/tablet
+(function() {
+    function fixAboutPageMargin() {
+        // Deteksi jika halaman about aktif
+        if (!window.location.hash.startsWith('#about')) return;
+        // Seleksi kontainer utama halaman tentang
+        const aboutBox = document.querySelector('.max-w-3xl.mx-auto.glassmorphism');
+        if (!aboutBox) return;
+        // Hanya di mobile/tablet (≤1024px)
+        if (window.innerWidth <= 1024) {
+            aboutBox.style.marginTop = '4.5rem';
+        } else {
+            aboutBox.style.marginTop = '';
+        }
+    }
+    window.addEventListener('hashchange', fixAboutPageMargin);
+    window.addEventListener('resize', fixAboutPageMargin);
+    document.addEventListener('DOMContentLoaded', fixAboutPageMargin);
+})();
+
+// Plugin: Pastikan seluruh pembungkus utama (div) di halaman Tentang tidak terpotong navbar di mobile/tablet
+(function() {
+    function fixAboutPageWrapperMargin() {
+        // Deteksi jika halaman about aktif
+        if (!window.location.hash.startsWith('#about')) return;
+        // Cari div pembungkus utama (langsung di bawah #view-container)
+        const wrapper = document.querySelector('#view-container > .max-w-3xl.mx-auto.glassmorphism');
+        if (!wrapper) return;
+        // Hanya di mobile/tablet (≤1024px)
+        if (window.innerWidth <= 1024) {
+            wrapper.style.marginTop = '4.5rem';
+        } else {
+            wrapper.style.marginTop = '';
+        }
+    }
+    window.addEventListener('hashchange', fixAboutPageWrapperMargin);
+    window.addEventListener('resize', fixAboutPageWrapperMargin);
+    document.addEventListener('DOMContentLoaded', fixAboutPageWrapperMargin);
+})();
+    </script>
+
+</body>
+</html>
